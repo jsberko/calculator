@@ -10,6 +10,17 @@
     flex-direction: column;
 }
 
+.display {
+    height: 50px;
+    width: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    font-size: 2em;
+    text-align: right;
+    overflow: auto;
+}
+
 .row {
     display: flex;
 }

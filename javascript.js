@@ -3,7 +3,17 @@ const container = document.querySelector(".container");
 const display = document.querySelector(".display");
 
 
+
+
 // Variables
+let num1 = null;
+let num2 = null;
+let operator = null;
+
+let numDisplay = "";
+
+
+
 
 // Functions
 function add(a, b) {
@@ -22,34 +32,87 @@ function divide(a, b) {
     return a / b;
 }
 
+function operate(num1, num2, operator) {
+    if (operator === "add") {
+        let result = add(num1, num2);
+        updateDisplay(`${result}`);
+    }
+    if (operator === "subtract") {
+        let result = subtract(num1, num2);
+        updateDisplay(`${result}`);
+    }
+    if (operator === "multiply") {
+        let result = multiply(num1, num2);
+        updateDisplay(`${result}`);
+    }
+    if (operator === "divide") {
+        let result = divide(num1, num2);
+        updateDisplay(`${result}`);
+    }
+}
 
-// Event Delegation
+
+function captureDigit(operatorType) {
+    if (num1 === null) {
+        operator = operatorType;
+
+        console.log(display.textContent);
+        num1 = parseInt(numDisplay);
+        numDisplay = "";
+    } else {
+        console.log(display.textContent);
+        num2 = parseInt(numDisplay);
+        numDisplay = "";
+
+        operate(num1, num2, operator);
+    }
+}
+
+
+function updateDisplay(num) {
+    numDisplay += num;
+    display.textContent = numDisplay;
+}
+
+
+function clear() {
+    display.textContent = "0"
+    num1 = null;
+    operator = null;
+    num2 = null;
+    numDisplay = "";
+}
+
+
+// Event Listeners
+document.addEventListener("DOMContentLoaded", () => display.textContent = "0");
+
 container.addEventListener("click", (event) => {
     let target = event.target;
 
     switch (target.id) {
-        case "AC": console.log("AC button pushed"); break;
-        case "negate": console.log("Negate button pushed"); break;
+        case "AC": clear(); break;
+        case "negate": display.textContent = "negate"; break;
         case "percent": console.log("Percent button pushed"); break;
-        case "divide": console.log("Divide button pushed"); break;
+        case "divide": captureDigit("divide"); break;
 
-        case "seven": console.log("Seven button pushed"); break;
-        case "eight": console.log("Eight button pushed"); break;
-        case "nine": console.log("Nine button pushed"); break;
-        case "multiply": console.log("Multiply button pushed"); break;
+        case "seven": updateDisplay("7"); break;
+        case "eight": updateDisplay("8"); break;
+        case "nine": updateDisplay("9"); break;
+        case "multiply": captureDigit("multiply"); break;
 
-        case "four": console.log("Four button pushed"); break;
-        case "five": console.log("Five button pushed"); break;
-        case "six": console.log("Six button pushed"); break;
-        case "subtract": console.log("Subtract button pushed"); break;
+        case "four": updateDisplay("4"); break;
+        case "five": updateDisplay("5"); break;
+        case "six": updateDisplay("6"); break;
+        case "subtract": captureDigit("subtract"); break;
 
-        case "one": console.log("One button pushed"); break;
-        case "two": console.log("Two button pushed"); break;
-        case "three": console.log("Three button pushed"); break;
-        case "add": console.log("Add button pushed"); break;
+        case "one": updateDisplay("1"); break;
+        case "two": updateDisplay("2"); break;
+        case "three": updateDisplay("3"); break;
+        case "add": captureDigit("add"); break;
 
-        case "zero": console.log("Zero button pushed"); break;
-        case "decimal": console.log("Decimal button pushed"); break;
-        case "equals": console.log("Equals button pushed"); break;
+        case "zero": updateDisplay("0"); break;
+        case "decimal": updateDisplay("."); break;
+        case "equals": captureDigit(); break;
     }
 })
