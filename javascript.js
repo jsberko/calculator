@@ -11,6 +11,8 @@ let num2 = null;
 let operator = null;
 
 let workingNum = "";
+let newNum = "";
+
 
 
 
@@ -57,36 +59,40 @@ function operate(num1, num2, operator) {
 }
 
 
-function captureDigit(operatorType) {
-    if (num1 === null) {
-        operator = operatorType;
+function updateOperator(operatorType) {
+    num1 = workingNum;
+    operator = operatorType;
+    workingNum = "";
+}
 
-        console.log(display.textContent);
-        num1 = parseInt(workingNum);
-        workingNum = "";
-    } else {
-        console.log(display.textContent);
-        num2 = parseInt(workingNum);
-        workingNum = "";
+function compute() {
+    num2 = workingNum;
 
-        operate(num1, num2, operator);
-    }
+    num1 = parseInt(num1);
+    num2 = parseInt(num2);
+
+    operate(num1, num2, operator);
+}
+
+function updateVariables() {
+
 }
 
 
 function updateWorkingNum(num) {
     workingNum += num;
-    updateDisplay();
+
+    updateDisplay(workingNum);
+}
+
+function updateDisplay(text) {
+    display.textContent = text;
 }
 
 function negateWorkingNum() {
     workingNum = (workingNum * -1).toString();
 
-    updateDisplay();
-}
-
-function updateDisplay() {
-    display.textContent = workingNum;
+    updateDisplay(workingNum);
 }
 
 
@@ -96,6 +102,7 @@ function clear() {
     operator = null;
     num2 = null;
     workingNum = "";
+    newNum = "";
 }
 
 
@@ -109,25 +116,25 @@ container.addEventListener("click", (event) => {
         case "AC": clear(); break;
         case "negate": negateWorkingNum(); break;
         case "percent": console.log("Percent button pushed"); break;
-        case "divide": captureDigit("divide"); break;
+        case "divide": updateOperator("divide"); break;
 
         case "seven": updateWorkingNum("7"); break;
         case "eight": updateWorkingNum("8"); break;
         case "nine": updateWorkingNum("9"); break;
-        case "multiply": captureDigit("multiply"); break;
+        case "multiply": updateOperator("multiply"); break;
 
         case "four": updateWorkingNum("4"); break;
         case "five": updateWorkingNum("5"); break;
         case "six": updateWorkingNum("6"); break;
-        case "subtract": captureDigit("subtract"); break;
+        case "subtract": updateOperator("subtract"); break;
 
         case "one": updateWorkingNum("1"); break;
         case "two": updateWorkingNum("2"); break;
         case "three": updateWorkingNum("3"); break;
-        case "add": captureDigit("add"); break;
+        case "add": updateOperator("add"); break;
 
         case "zero": updateWorkingNum("0"); break;
         case "decimal": updateWorkingNum("."); break;
-        case "equals": captureDigit(); break;
+        case "compute": compute(); break;
     }
 })
