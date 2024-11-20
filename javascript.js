@@ -10,7 +10,7 @@ let num1 = null;
 let num2 = null;
 let operator = null;
 
-let workingNum = "";
+let displayNum = "";
 let newNum = "";
 
 
@@ -42,31 +42,41 @@ function operate(num1, num2, operator) {
     if (operator === "add") {
         let result = add(num1, num2);
         updateDisplay(`${result}`);
+        updateVariables(result);
     }
     if (operator === "subtract") {
         let result = subtract(num1, num2);
         updateDisplay(`${result}`);
+        updateVariables(result);
     }
 
     if (operator === "multiply") {
         let result = multiply(num1, num2);
         updateDisplay(`${result}`);
+        updateVariables(result);
     }
     if (operator === "divide") {
         let result = divide(num1, num2);
         updateDisplay(`${result}`);
+        updateVariables(result);
     }
+}
+
+function updateVariables(result) {
+    num1 = result;
+    num2 = "";
+    operator = null;
 }
 
 
 function updateOperator(operatorType) {
-    num1 = workingNum;
     operator = operatorType;
-    workingNum = "";
+
+    num1 = displayNum;
 }
 
 function compute() {
-    num2 = workingNum;
+    num2 = displayNum;
 
     num1 = parseInt(num1);
     num2 = parseInt(num2);
@@ -74,41 +84,40 @@ function compute() {
     operate(num1, num2, operator);
 }
 
-function updateVariables() {
+function updateDisplayNum(num) {
+    if (operator) {
+        displayNum = ""
+    }
 
-}
+    displayNum += num;
 
-
-function updateWorkingNum(num) {
-    workingNum += num;
-
-    updateDisplay(workingNum);
+    updateDisplay(displayNum);
 }
 
 function updateDisplay(text) {
     display.textContent = text;
 }
 
-function negateWorkingNum() {
-    workingNum = (workingNum * -1).toString();
+function negatedisplayNum() {
+    displayNum = (displayNum * -1).toString();
 
-    updateDisplay(workingNum);
+    updateDisplay(displayNum);
 }
 
 
-function percentageOfWorkingNum() {
-    if (workingNum.length <= 1) {
-        workingNum = `0.0${workingNum}`;
-    } else if (workingNum.length <= 2) {
-        workingNum = `0.${workingNum}`;
-    } else if (workingNum.length >= 3) {
-        let workingNumArr = workingNum.split("");
-        let spliceIndex = workingNumArr.length - 2;
-        workingNumArr.splice(spliceIndex, 0, ".");
+function percentageOfdisplayNum() {
+    if (displayNum.length <= 1) {
+        displayNum = `0.0${displayNum}`;
+    } else if (displayNum.length <= 2) {
+        displayNum = `0.${displayNum}`;
+    } else if (displayNum.length >= 3) {
+        let displayNumArr = displayNum.split("");
+        let spliceIndex = displayNumArr.length - 2;
+        displayNumArr.splice(spliceIndex, 0, ".");
 
-        workingNum = workingNumArr.join("");
+        displayNum = displayNumArr.join("");
     }
-    updateDisplay(workingNum);
+    updateDisplay(displayNum);
 }
 
 function clear() {
@@ -116,7 +125,7 @@ function clear() {
     num1 = null;
     operator = null;
     num2 = null;
-    workingNum = "";
+    displayNum = "";
     newNum = "";
 }
 
@@ -129,27 +138,27 @@ container.addEventListener("click", (event) => {
 
     switch (target.id) {
         case "AC": clear(); break;
-        case "negate": negateWorkingNum(); break;
-        case "percent": percentageOfWorkingNum(); break;
+        case "negate": negatedisplayNum(); break;
+        case "percent": percentageOfdisplayNum(); break;
         case "divide": updateOperator("divide"); break;
 
-        case "seven": updateWorkingNum("7"); break;
-        case "eight": updateWorkingNum("8"); break;
-        case "nine": updateWorkingNum("9"); break;
+        case "seven": updateDisplayNum("7"); break;
+        case "eight": updateDisplayNum("8"); break;
+        case "nine": updateDisplayNum("9"); break;
         case "multiply": updateOperator("multiply"); break;
 
-        case "four": updateWorkingNum("4"); break;
-        case "five": updateWorkingNum("5"); break;
-        case "six": updateWorkingNum("6"); break;
+        case "four": updateDisplayNum("4"); break;
+        case "five": updateDisplayNum("5"); break;
+        case "six": updateDisplayNum("6"); break;
         case "subtract": updateOperator("subtract"); break;
 
-        case "one": updateWorkingNum("1"); break;
-        case "two": updateWorkingNum("2"); break;
-        case "three": updateWorkingNum("3"); break;
+        case "one": updateDisplayNum("1"); break;
+        case "two": updateDisplayNum("2"); break;
+        case "three": updateDisplayNum("3"); break;
         case "add": updateOperator("add"); break;
 
-        case "zero": updateWorkingNum("0"); break;
-        case "decimal": updateWorkingNum("."); break;
+        case "zero": updateDisplayNum("0"); break;
+        case "decimal": updateDisplayNum("."); break;
         case "compute": compute(); break;
     }
 })
