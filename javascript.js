@@ -33,7 +33,7 @@ function multiply(a, b) {
 function divide(a, b) {
     if (b === 0) {
         return "Nice try";
-
+    } else {
         return a / b;
     }
 }
@@ -96,7 +96,7 @@ function negateWorkingNum() {
 }
 
 
-function percentageWorkingNum() {
+function percentageOfWorkingNum() {
     if (workingNum.length <= 1) {
         workingNum = `0.0${workingNum}`;
     } else if (workingNum.length <= 2) {
@@ -130,7 +130,7 @@ container.addEventListener("click", (event) => {
     switch (target.id) {
         case "AC": clear(); break;
         case "negate": negateWorkingNum(); break;
-        case "percent": percentageWorkingNum(); break;
+        case "percent": percentageOfWorkingNum(); break;
         case "divide": updateOperator("divide"); break;
 
         case "seven": updateWorkingNum("7"); break;
