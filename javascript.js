@@ -96,6 +96,21 @@ function negateWorkingNum() {
 }
 
 
+function percentageWorkingNum() {
+    if (workingNum.length <= 1) {
+        workingNum = `0.0${workingNum}`;
+    } else if (workingNum.length <= 2) {
+        workingNum = `0.${workingNum}`;
+    } else if (workingNum.length >= 3) {
+        let workingNumArr = workingNum.split("");
+        let spliceIndex = workingNumArr.length - 2;
+        workingNumArr.splice(spliceIndex, 0, ".");
+
+        workingNum = workingNumArr.join("");
+    }
+    updateDisplay(workingNum);
+}
+
 function clear() {
     display.textContent = "0"
     num1 = null;
@@ -115,7 +130,7 @@ container.addEventListener("click", (event) => {
     switch (target.id) {
         case "AC": clear(); break;
         case "negate": negateWorkingNum(); break;
-        case "percent": console.log("Percent button pushed"); break;
+        case "percent": percentageWorkingNum(); break;
         case "divide": updateOperator("divide"); break;
 
         case "seven": updateWorkingNum("7"); break;
