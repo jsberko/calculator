@@ -10,7 +10,7 @@ let num1 = null;
 let num2 = null;
 let operator = null;
 
-let numDisplay = "";
+let workingNum = "";
 
 
 
@@ -29,7 +29,11 @@ function multiply(a, b) {
 }
 
 function divide(a, b) {
-    return a / b;
+    if (b === 0) {
+        return "Nice try";
+
+        return a / b;
+    }
 }
 
 function operate(num1, num2, operator) {
@@ -41,6 +45,7 @@ function operate(num1, num2, operator) {
         let result = subtract(num1, num2);
         updateDisplay(`${result}`);
     }
+
     if (operator === "multiply") {
         let result = multiply(num1, num2);
         updateDisplay(`${result}`);
@@ -57,21 +62,31 @@ function captureDigit(operatorType) {
         operator = operatorType;
 
         console.log(display.textContent);
-        num1 = parseInt(numDisplay);
-        numDisplay = "";
+        num1 = parseInt(workingNum);
+        workingNum = "";
     } else {
         console.log(display.textContent);
-        num2 = parseInt(numDisplay);
-        numDisplay = "";
+        num2 = parseInt(workingNum);
+        workingNum = "";
 
         operate(num1, num2, operator);
     }
 }
 
 
-function updateDisplay(num) {
-    numDisplay += num;
-    display.textContent = numDisplay;
+function updateWorkingNum(num) {
+    workingNum += num;
+    updateDisplay();
+}
+
+function negateWorkingNum() {
+    workingNum = (workingNum * -1).toString();
+
+    updateDisplay();
+}
+
+function updateDisplay() {
+    display.textContent = workingNum;
 }
 
 
@@ -80,7 +95,7 @@ function clear() {
     num1 = null;
     operator = null;
     num2 = null;
-    numDisplay = "";
+    workingNum = "";
 }
 
 
@@ -92,27 +107,27 @@ container.addEventListener("click", (event) => {
 
     switch (target.id) {
         case "AC": clear(); break;
-        case "negate": display.textContent = "negate"; break;
+        case "negate": negateWorkingNum(); break;
         case "percent": console.log("Percent button pushed"); break;
         case "divide": captureDigit("divide"); break;
 
-        case "seven": updateDisplay("7"); break;
-        case "eight": updateDisplay("8"); break;
-        case "nine": updateDisplay("9"); break;
+        case "seven": updateWorkingNum("7"); break;
+        case "eight": updateWorkingNum("8"); break;
+        case "nine": updateWorkingNum("9"); break;
         case "multiply": captureDigit("multiply"); break;
 
-        case "four": updateDisplay("4"); break;
-        case "five": updateDisplay("5"); break;
-        case "six": updateDisplay("6"); break;
+        case "four": updateWorkingNum("4"); break;
+        case "five": updateWorkingNum("5"); break;
+        case "six": updateWorkingNum("6"); break;
         case "subtract": captureDigit("subtract"); break;
 
-        case "one": updateDisplay("1"); break;
-        case "two": updateDisplay("2"); break;
-        case "three": updateDisplay("3"); break;
+        case "one": updateWorkingNum("1"); break;
+        case "two": updateWorkingNum("2"); break;
+        case "three": updateWorkingNum("3"); break;
         case "add": captureDigit("add"); break;
 
-        case "zero": updateDisplay("0"); break;
-        case "decimal": updateDisplay("."); break;
+        case "zero": updateWorkingNum("0"); break;
+        case "decimal": updateWorkingNum("."); break;
         case "equals": captureDigit(); break;
     }
 })
