@@ -8,17 +8,20 @@
     width: 400px;
     display: flex;
     flex-direction: column;
+    align-items: center;
 }
 
 .display {
+    padding: 10px 10px 10px 0;
+    margin: 0 0 0 10px;
     height: 50px;
     width: 200px;
     display: flex;
     align-items: center;
     justify-content: right;
-    font-size: 2em;
+    font-size: 1.98em;
     text-align: right;
-    overflow: auto;
+    overflow: hidden;
 }
 
 .row {
