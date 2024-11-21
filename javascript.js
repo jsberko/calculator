@@ -39,23 +39,27 @@ function operate(num1, num2, currentOperator, onDeckOperator) {
 
     if (currentOperator === "+") {
         result = add(num1, num2);
-        console.log(`Add: ${num1} ${num2}`);
+        console.log(`Add: ${num1} ${num2}. Result: ${typeof (result)}`);
     }
     if (currentOperator === "-") {
         result = subtract(num1, num2);
-        console.log(`Subtract: ${num1} ${num2}`);
+        console.log(`Subtract: ${num1} ${num2}. Result: ${typeof (result)}`);
     }
 
     if (currentOperator === "*") {
         result = multiply(num1, num2);
-        console.log(`Multiply: ${num1} ${num2}`);
+        console.log(`Multiply: ${num1} ${num2}. Result: ${typeof (result)}`);
     }
     if (currentOperator === "/") {
         result = divide(num1, num2);
-        console.log(`Divide: ${num1} ${num2}`);
+        console.log(`Divide: ${num1} ${num2}. Result: ${typeof (result)}`);
     }
     updateDisplay(`${result}`);
     updateVariables(result, onDeckOperator);
+}
+
+function roundNumberCheck(result) {
+    console.log("roundNum initiated");
 }
 
 function updateVariables(result, onDeckOperator) {
@@ -105,8 +109,12 @@ function compute(onDeckOperator) {
 }
 
 function updateDisplayNum(num) {
-    displayNum += num;
-    updateDisplay(displayNum);
+    if (displayNum === "" && num === "0") {
+        console.log("Stop pressing 0!");
+    } else {
+        displayNum += num;
+        updateDisplay(displayNum);
+    }
 
 }
 
@@ -158,24 +166,25 @@ container.addEventListener("click", (event) => {
         case "AC": clear(); break;
         case "negate": negatedDisplayNum(); break;
         case "percent": percentageOfDisplayNum(); break;
-        case "divide": updateOperator("/"); break;
 
-        case "seven": updateDisplayNum("7"); break;
-        case "eight": updateDisplayNum("8"); break;
-        case "nine": updateDisplayNum("9"); break;
-        case "multiply": updateOperator("*"); break;
 
-        case "four": updateDisplayNum("4"); break;
-        case "five": updateDisplayNum("5"); break;
-        case "six": updateDisplayNum("6"); break;
-        case "subtract": updateOperator("-"); break;
 
+        case "zero": updateDisplayNum("0"); break;
         case "one": updateDisplayNum("1"); break;
         case "two": updateDisplayNum("2"); break;
         case "three": updateDisplayNum("3"); break;
-        case "add": updateOperator("+"); break;
+        case "four": updateDisplayNum("4"); break;
+        case "five": updateDisplayNum("5"); break;
+        case "six": updateDisplayNum("6"); break;
+        case "seven": updateDisplayNum("7"); break;
+        case "eight": updateDisplayNum("8"); break;
+        case "nine": updateDisplayNum("9"); break;
 
-        case "zero": updateDisplayNum("0"); break;
+        case "add": updateOperator("+"); break;
+        case "subtract": updateOperator("-"); break;
+        case "multiply": updateOperator("*"); break;
+        case "divide": updateOperator("/"); break;
+
         //Every time I hit this button it adds a decimal
         case "decimal": updateDisplayNum("."); break;
         case "compute": compute(); break;
