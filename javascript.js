@@ -1,19 +1,15 @@
 // Selectors
 const container = document.querySelector(".container");
 const display = document.querySelector(".display");
-
-
+const decimalButton = document.querySelector("#decimal");
 
 
 // Variables
 let num1 = null;
 let num2 = null;
 let operator = null;
-
+let nextOperator = null;
 let displayNum = "";
-let newNum = "";
-
-
 
 
 
@@ -38,74 +34,99 @@ function divide(a, b) {
     }
 }
 
-function operate(num1, num2, operator) {
-    if (operator === "add") {
+function operate(num1, num2, operator, nextOperator) {
+    if (operator === "+") {
         let result = add(num1, num2);
+        console.log(`Add: ${num1} ${num2}`);
         updateDisplay(`${result}`);
-        updateVariables(result);
+        updateVariables(result, nextOperator);
     }
-    if (operator === "subtract") {
+    if (operator === "-") {
         let result = subtract(num1, num2);
+        console.log(`Subtract: ${num1} ${num2}`);
         updateDisplay(`${result}`);
-        updateVariables(result);
+        updateVariables(result, nextOperator);
     }
 
-    if (operator === "multiply") {
+    if (operator === "*") {
         let result = multiply(num1, num2);
+        console.log(`Multiply: ${num1} ${num2}`);
         updateDisplay(`${result}`);
-        updateVariables(result);
+        updateVariables(result, nextOperator);
     }
-    if (operator === "divide") {
+    if (operator === "/") {
         let result = divide(num1, num2);
+        console.log(`Divide: ${num1} ${num2}`);
         updateDisplay(`${result}`);
-        updateVariables(result);
+        updateVariables(result, nextOperator);
     }
 }
 
-function updateVariables(result) {
+function updateVariables(result, nextOperator) {
+    console.log("updateVariables called");
     num1 = result;
-    num2 = "";
-    operator = null;
+    num2 = null;
+    operator = nextOperator;
+    displayNum = "";
 }
 
 
 function updateOperator(operatorType) {
-    operator = operatorType;
-
-    num1 = displayNum;
+    console.log("updateOperator called");
+    if (num1 === null) {
+        //Capturing num1 first time
+        console.log("First num1 capture");
+        num1 = displayNum;
+        displayNum = "";
+        operator = operatorType;
+    } else if (num1 && !operator) {
+        console.log("Let's add num2!");
+        operator = operatorType;
+    } else if (num1 && num2 === null && operator) {
+        console.log("Let's compute the current expression");
+        nextOperator = operatorType;
+        compute(nextOperator);
+    }
 }
 
-function compute() {
+
+function clearDisplay() {
+    updateDisplay("0");
+}
+
+function compute(nextOperator) {
+    console.log("compute called");
+    //Capturing num2
+    console.log("num2 captured");
     num2 = displayNum;
+    // displayNum = "";
+    num1 = +num1;
+    num2 = +num2;
+    // console.log(`num1: ${num1}`);
+    // console.log(`num2: ${num2}`);
 
-    num1 = parseInt(num1);
-    num2 = parseInt(num2);
-
-    operate(num1, num2, operator);
+    operate(num1, num2, operator, nextOperator);
 }
 
 function updateDisplayNum(num) {
-    if (operator) {
-        displayNum = ""
-    }
-
     displayNum += num;
-
     updateDisplay(displayNum);
+
 }
 
 function updateDisplay(text) {
     display.textContent = text;
 }
 
-function negatedisplayNum() {
+function negatedDisplayNum() {
     displayNum = (displayNum * -1).toString();
 
     updateDisplay(displayNum);
 }
 
 
-function percentageOfdisplayNum() {
+//If I hit this button twice it adds another decimal
+function percentageOfDisplayNum() {
     if (displayNum.length <= 1) {
         displayNum = `0.0${displayNum}`;
     } else if (displayNum.length <= 2) {
@@ -126,7 +147,6 @@ function clear() {
     operator = null;
     num2 = null;
     displayNum = "";
-    newNum = "";
 }
 
 
@@ -138,26 +158,27 @@ container.addEventListener("click", (event) => {
 
     switch (target.id) {
         case "AC": clear(); break;
-        case "negate": negatedisplayNum(); break;
-        case "percent": percentageOfdisplayNum(); break;
-        case "divide": updateOperator("divide"); break;
+        case "negate": negatedDisplayNum(); break;
+        case "percent": percentageOfDisplayNum(); break;
+        case "divide": updateOperator("/"); break;
 
         case "seven": updateDisplayNum("7"); break;
         case "eight": updateDisplayNum("8"); break;
         case "nine": updateDisplayNum("9"); break;
-        case "multiply": updateOperator("multiply"); break;
+        case "multiply": updateOperator("*"); break;
 
         case "four": updateDisplayNum("4"); break;
         case "five": updateDisplayNum("5"); break;
         case "six": updateDisplayNum("6"); break;
-        case "subtract": updateOperator("subtract"); break;
+        case "subtract": updateOperator("-"); break;
 
         case "one": updateDisplayNum("1"); break;
         case "two": updateDisplayNum("2"); break;
         case "three": updateDisplayNum("3"); break;
-        case "add": updateOperator("add"); break;
+        case "add": updateOperator("+"); break;
 
         case "zero": updateDisplayNum("0"); break;
+        //Every time I hit this button it adds a decimal
         case "decimal": updateDisplayNum("."); break;
         case "compute": compute(); break;
     }
