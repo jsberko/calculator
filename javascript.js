@@ -35,31 +35,27 @@ function divide(a, b) {
 }
 
 function operate(num1, num2, currentOperator, onDeckOperator) {
+    let result;
+
     if (currentOperator === "+") {
-        let result = add(num1, num2);
+        result = add(num1, num2);
         console.log(`Add: ${num1} ${num2}`);
-        updateDisplay(`${result}`);
-        updateVariables(result, onDeckOperator);
     }
     if (currentOperator === "-") {
-        let result = subtract(num1, num2);
+        result = subtract(num1, num2);
         console.log(`Subtract: ${num1} ${num2}`);
-        updateDisplay(`${result}`);
-        updateVariables(result, onDeckOperator);
     }
 
     if (currentOperator === "*") {
-        let result = multiply(num1, num2);
+        result = multiply(num1, num2);
         console.log(`Multiply: ${num1} ${num2}`);
-        updateDisplay(`${result}`);
-        updateVariables(result, onDeckOperator);
     }
     if (currentOperator === "/") {
-        let result = divide(num1, num2);
+        result = divide(num1, num2);
         console.log(`Divide: ${num1} ${num2}`);
-        updateDisplay(`${result}`);
-        updateVariables(result, onDeckOperator);
     }
+    updateDisplay(`${result}`);
+    updateVariables(result, onDeckOperator);
 }
 
 function updateVariables(result, onDeckOperator) {
