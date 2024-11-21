@@ -7,8 +7,8 @@ const decimalButton = document.querySelector("#decimal");
 // Variables
 let num1 = null;
 let num2 = null;
-let operator = null;
-let nextOperator = null;
+let currentOperator = null;
+let onDeckOperator = null;
 let displayNum = "";
 
 
@@ -34,58 +34,61 @@ function divide(a, b) {
     }
 }
 
-function operate(num1, num2, operator, nextOperator) {
-    if (operator === "+") {
+function operate(num1, num2, currentOperator, onDeckOperator) {
+    if (currentOperator === "+") {
         let result = add(num1, num2);
         console.log(`Add: ${num1} ${num2}`);
         updateDisplay(`${result}`);
-        updateVariables(result, nextOperator);
+        updateVariables(result, onDeckOperator);
     }
-    if (operator === "-") {
+    if (currentOperator === "-") {
         let result = subtract(num1, num2);
         console.log(`Subtract: ${num1} ${num2}`);
         updateDisplay(`${result}`);
-        updateVariables(result, nextOperator);
+        updateVariables(result, onDeckOperator);
     }
 
-    if (operator === "*") {
+    if (currentOperator === "*") {
         let result = multiply(num1, num2);
         console.log(`Multiply: ${num1} ${num2}`);
         updateDisplay(`${result}`);
-        updateVariables(result, nextOperator);
+        updateVariables(result, onDeckOperator);
     }
-    if (operator === "/") {
+    if (currentOperator === "/") {
         let result = divide(num1, num2);
         console.log(`Divide: ${num1} ${num2}`);
         updateDisplay(`${result}`);
-        updateVariables(result, nextOperator);
+        updateVariables(result, onDeckOperator);
     }
 }
 
-function updateVariables(result, nextOperator) {
+function updateVariables(result, onDeckOperator) {
     console.log("updateVariables called");
     num1 = result;
     num2 = null;
-    operator = nextOperator;
+    currentOperator = onDeckOperator;
     displayNum = "";
+    console.log(`on deck operator is ${currentOperator}`);
 }
 
-
+//If I press multiple operator buttons in a row weird things happen
 function updateOperator(operatorType) {
     console.log("updateOperator called");
+    //Capturing num1 first time
     if (num1 === null) {
-        //Capturing num1 first time
         console.log("First num1 capture");
         num1 = displayNum;
         displayNum = "";
-        operator = operatorType;
-    } else if (num1 && !operator) {
+        currentOperator = operatorType;
+    }
+    //Capturing num1 first time
+    else if (num1 && !currentOperator) {
         console.log("Let's add num2!");
-        operator = operatorType;
-    } else if (num1 && num2 === null && operator) {
+        currentOperator = operatorType;
+    } else if (num1 && num2 === null && currentOperator) {
         console.log("Let's compute the current expression");
-        nextOperator = operatorType;
-        compute(nextOperator);
+        onDeckOperator = operatorType;
+        compute(onDeckOperator);
     }
 }
 
@@ -94,18 +97,15 @@ function clearDisplay() {
     updateDisplay("0");
 }
 
-function compute(nextOperator) {
+function compute(onDeckOperator) {
     console.log("compute called");
     //Capturing num2
     console.log("num2 captured");
     num2 = displayNum;
-    // displayNum = "";
     num1 = +num1;
     num2 = +num2;
-    // console.log(`num1: ${num1}`);
-    // console.log(`num2: ${num2}`);
 
-    operate(num1, num2, operator, nextOperator);
+    operate(num1, num2, currentOperator, onDeckOperator);
 }
 
 function updateDisplayNum(num) {
@@ -118,6 +118,7 @@ function updateDisplay(text) {
     display.textContent = text;
 }
 
+//Does not work when a calculation result is displayed
 function negatedDisplayNum() {
     displayNum = (displayNum * -1).toString();
 
@@ -144,7 +145,8 @@ function percentageOfDisplayNum() {
 function clear() {
     display.textContent = "0"
     num1 = null;
-    operator = null;
+    currentOperator = null;
+    onDeckOperator = null;
     num2 = null;
     displayNum = "";
 }
