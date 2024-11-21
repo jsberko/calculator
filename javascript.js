@@ -14,17 +14,11 @@ let displayNum = "";
 
 
 // Functions
-function add(a, b) {
-    return a + b;
-}
+function add(a, b) { return a + b; }
 
-function subtract(a, b) {
-    return a - b;
-}
+function subtract(a, b) { return a - b; }
 
-function multiply(a, b) {
-    return a * b;
-}
+function multiply(a, b) { return a * b; }
 
 function divide(a, b) {
     if (b === 0) {
@@ -39,54 +33,50 @@ function operate(num1, num2, currentOperator, onDeckOperator) {
 
     if (currentOperator === "+") {
         result = add(num1, num2);
-        console.log(`Add: ${num1} ${num2}. Result: ${typeof (result)}`);
     }
     if (currentOperator === "-") {
         result = subtract(num1, num2);
-        console.log(`Subtract: ${num1} ${num2}. Result: ${typeof (result)}`);
     }
 
     if (currentOperator === "*") {
         result = multiply(num1, num2);
-        console.log(`Multiply: ${num1} ${num2}. Result: ${typeof (result)}`);
     }
     if (currentOperator === "/") {
         result = divide(num1, num2);
-        console.log(`Divide: ${num1} ${num2}. Result: ${typeof (result)}`);
     }
     updateDisplay(`${result}`);
     updateVariables(result, onDeckOperator);
 }
 
-function roundNumberCheck(result) {
-    console.log("roundNum initiated");
-}
+// function roundLongDecimals(result) {
+//     console.log("roundNum initiated");
+//     let workingResult = result.toString().split("");
+//     if (workingResult.length - workingResult.indexOf(".") > 3) {
+//         console.log(typeof (result.toFixed(3)));
+//     }
+// }
 
 function updateVariables(result, onDeckOperator) {
-    console.log("updateVariables called");
     num1 = result;
     num2 = null;
     currentOperator = onDeckOperator;
     displayNum = "";
-    console.log(`on deck operator is ${currentOperator}`);
 }
 
 //If I press multiple operator buttons in a row weird things happen
 function updateOperator(operatorType) {
-    console.log("updateOperator called");
     //Capturing num1 first time
     if (num1 === null) {
-        console.log("First num1 capture");
         num1 = displayNum;
         displayNum = "";
         currentOperator = operatorType;
     }
     //Capturing num1 first time
     else if (num1 && !currentOperator) {
-        console.log("Let's add num2!");
         currentOperator = operatorType;
-    } else if (num1 && num2 === null && currentOperator) {
-        console.log("Let's compute the current expression");
+    }
+
+    else if (num1 && num2 === null && currentOperator) {
         onDeckOperator = operatorType;
         compute(onDeckOperator);
     }
@@ -98,24 +88,23 @@ function clearDisplay() {
 }
 
 function compute(onDeckOperator) {
-    console.log("compute called");
-    //Capturing num2
-    console.log("num2 captured");
-    num2 = displayNum;
-    num1 = +num1;
-    num2 = +num2;
+    if (num1 && currentOperator) {
+        num2 = displayNum;
+        num1 = +num1;
+        num2 = +num2;
 
-    operate(num1, num2, currentOperator, onDeckOperator);
+        operate(num1, num2, currentOperator, onDeckOperator);
+    }
 }
 
 function updateDisplayNum(num) {
+    //Conditional to stop user from filling the display with zeros
     if (displayNum === "" && num === "0") {
-        console.log("Stop pressing 0!");
+        //do nothing
     } else {
         displayNum += num;
         updateDisplay(displayNum);
     }
-
 }
 
 function updateDisplay(text) {
