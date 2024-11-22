@@ -2,6 +2,12 @@
 const container = document.querySelector(".container");
 const display = document.querySelector(".display");
 const decimalButton = document.querySelector("#decimal");
+const backspaceButton = document.querySelector("#backspace");
+
+const addButton = document.querySelector("#add");
+const subtractButton = document.querySelector("#subtract");
+const multiplyButton = document.querySelector("#multiply");
+const divideButton = document.querySelector("#divide");
 
 
 // Variables
@@ -73,16 +79,37 @@ function updateOperator(operatorType) {
         num1 = displayNum;
         displayNum = "";
         currentOperator = operatorType;
+        selectOperatorButton(currentOperator);
     }
     //Capturing num1 first time
     else if (num1 && !currentOperator) {
         currentOperator = operatorType;
+        selectOperatorButton(currentOperator);
     }
 
     else if (num1 && num2 === null && currentOperator) {
         onDeckOperator = operatorType;
+        selectOperatorButton(onDeckOperator);
         compute(onDeckOperator);
     }
+}
+
+function selectOperatorButton(currentOperator) {
+    clearOperatorButtons();
+
+    switch (currentOperator) {
+        case "+": addButton.classList.add("highlight"); break;
+        case "-": subtractButton.classList.add("highlight"); break;
+        case "*": multiplyButton.classList.add("highlight"); break;
+        case "/": divideButton.classList.add("highlight"); break;
+    }
+}
+
+function clearOperatorButtons() {
+    addButton.classList.remove("highlight");
+    subtractButton.classList.remove("highlight");
+    multiplyButton.classList.remove("highlight");
+    divideButton.classList.remove("highlight");
 }
 
 
@@ -90,7 +117,13 @@ function clearDisplay() {
     updateDisplay("0");
 }
 
+function getDisplay() {
+    displayNum = display.textContent;
+}
+
+
 function compute(onDeckOperator) {
+    clearOperatorButtons();
     if (num1 && currentOperator) {
         num2 = displayNum;
         num1 = +num1;
@@ -138,6 +171,21 @@ function percentageOfDisplayNum() {
     updateDisplay(displayNum);
 }
 
+function eraseLastNum() {
+    getDisplay();
+
+    if (displayNum !== "0") {
+        const indexToRemove = displayNum.length - 1;
+        const newDisplayNum = displayNum.slice(0, indexToRemove);
+        displayNum = newDisplayNum;
+
+        if (displayNum === "") {
+            displayNum = "0";
+        }
+        updateDisplay(displayNum);
+    }
+}
+
 function clear() {
     display.textContent = "0"
     num1 = null;
@@ -145,6 +193,7 @@ function clear() {
     onDeckOperator = null;
     num2 = null;
     displayNum = "";
+    clearOperatorButtons()
 }
 
 
@@ -179,6 +228,7 @@ container.addEventListener("click", (event) => {
 
         //Every time I hit this button it adds a decimal
         case "decimal": updateDisplayNum("."); break;
+        case "backspace": eraseLastNum(); break;
         case "compute": compute(); break;
     }
 })
