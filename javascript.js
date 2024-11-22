@@ -15,7 +15,7 @@ let num1 = null;
 let num2 = null;
 let currentOperator = null;
 let onDeckOperator = null;
-let displayNum = "";
+let currentDisplay = "";
 
 
 
@@ -57,27 +57,20 @@ function operate(num1, num2, currentOperator, onDeckOperator) {
     updateVariables(result, onDeckOperator);
 }
 
-// function roundLongDecimals(result) {
-//     console.log("roundNum initiated");
-//     let workingResult = result.toString().split("");
-//     if (workingResult.length - workingResult.indexOf(".") > 3) {
-//         console.log(typeof (result.toFixed(3)));
-//     }
-// }
 
 function updateVariables(result, onDeckOperator) {
     num1 = result;
     num2 = null;
     currentOperator = onDeckOperator;
-    displayNum = "";
+    currentDisplay = "";
 }
 
 //If I press multiple operator buttons in a row weird things happen
 function updateOperator(operatorType) {
     //Capturing num1 first time
     if (num1 === null) {
-        num1 = displayNum;
-        displayNum = "";
+        num1 = currentDisplay;
+        currentDisplay = "";
         currentOperator = operatorType;
         selectOperatorButton(currentOperator);
     }
@@ -118,14 +111,14 @@ function clearDisplay() {
 }
 
 function getDisplay() {
-    displayNum = display.textContent;
+    currentDisplay = display.textContent;
 }
 
 
 function compute(onDeckOperator) {
     clearOperatorButtons();
     if (num1 && currentOperator) {
-        num2 = displayNum;
+        num2 = currentDisplay;
         num1 = +num1;
         num2 = +num2;
 
@@ -133,13 +126,13 @@ function compute(onDeckOperator) {
     }
 }
 
-function updateDisplayNum(num) {
+function addDigit(num) {
     //Conditional to stop user from filling the display with zeros
-    if (displayNum === "" && num === "0") {
-        //do nothing
+    if (currentDisplay === "" && num === "0") {
+        console.log("User trying to stack 0's")
     } else {
-        displayNum += num;
-        updateDisplay(displayNum);
+        currentDisplay += num;
+        updateDisplay(currentDisplay);
     }
 }
 
@@ -148,41 +141,41 @@ function updateDisplay(text) {
 }
 
 //Does not work when a calculation result is displayed
-function negatedDisplayNum() {
-    displayNum = (displayNum * -1).toString();
+function negateDisplay() {
+    currentDisplay = (currentDisplay * -1).toString();
 
-    updateDisplay(displayNum);
+    updateDisplay(currentDisplay);
 }
 
 
 //If I hit this button twice it adds another decimal
-function percentageOfDisplayNum() {
-    if (displayNum.length <= 1) {
-        displayNum = `0.0${displayNum}`;
-    } else if (displayNum.length <= 2) {
-        displayNum = `0.${displayNum}`;
-    } else if (displayNum.length >= 3) {
-        let displayNumArr = displayNum.split("");
-        let spliceIndex = displayNumArr.length - 2;
-        displayNumArr.splice(spliceIndex, 0, ".");
+function percentageOfCurrentDisplay() {
+    if (currentDisplay.length <= 1) {
+        currentDisplay = `0.0${currentDisplay}`;
+    } else if (currentDisplay.length <= 2) {
+        currentDisplay = `0.${currentDisplay}`;
+    } else if (currentDisplay.length >= 3) {
+        let currentDisplayArr = currentDisplay.split("");
+        let spliceIndex = currentDisplayArr.length - 2;
+        currentDisplayArr.splice(spliceIndex, 0, ".");
 
-        displayNum = displayNumArr.join("");
+        currentDisplay = currentDisplayArr.join("");
     }
-    updateDisplay(displayNum);
+    updateDisplay(currentDisplay);
 }
 
 function eraseLastNum() {
     getDisplay();
 
-    if (displayNum !== "0") {
-        const indexToRemove = displayNum.length - 1;
-        const newDisplayNum = displayNum.slice(0, indexToRemove);
-        displayNum = newDisplayNum;
+    if (currentDisplay !== "0") {
+        const indexToRemove = currentDisplay.length - 1;
+        const newDisplayNum = currentDisplay.slice(0, indexToRemove);
+        currentDisplay = newDisplayNum;
 
-        if (displayNum === "") {
-            displayNum = "0";
+        if (currentDisplay === "") {
+            currentDisplay = "0";
         }
-        updateDisplay(displayNum);
+        updateDisplay(currentDisplay);
     }
 }
 
@@ -192,7 +185,7 @@ function clear() {
     currentOperator = null;
     onDeckOperator = null;
     num2 = null;
-    displayNum = "";
+    currentDisplay = "";
     clearOperatorButtons()
 }
 
@@ -205,21 +198,21 @@ container.addEventListener("click", (event) => {
 
     switch (target.id) {
         case "AC": clear(); break;
-        case "negate": negatedDisplayNum(); break;
+        case "negate": negateDisplay(); break;
         case "percent": percentageOfDisplayNum(); break;
 
 
 
-        case "zero": updateDisplayNum("0"); break;
-        case "one": updateDisplayNum("1"); break;
-        case "two": updateDisplayNum("2"); break;
-        case "three": updateDisplayNum("3"); break;
-        case "four": updateDisplayNum("4"); break;
-        case "five": updateDisplayNum("5"); break;
-        case "six": updateDisplayNum("6"); break;
-        case "seven": updateDisplayNum("7"); break;
-        case "eight": updateDisplayNum("8"); break;
-        case "nine": updateDisplayNum("9"); break;
+        case "zero": addDigit("0"); break;
+        case "one": addDigit("1"); break;
+        case "two": addDigit("2"); break;
+        case "three": addDigit("3"); break;
+        case "four": addDigit("4"); break;
+        case "five": addDigit("5"); break;
+        case "six": addDigit("6"); break;
+        case "seven": addDigit("7"); break;
+        case "eight": addDigit("8"); break;
+        case "nine": addDigit("9"); break;
 
         case "add": updateOperator("+"); break;
         case "subtract": updateOperator("-"); break;
@@ -227,7 +220,7 @@ container.addEventListener("click", (event) => {
         case "divide": updateOperator("/"); break;
 
         //Every time I hit this button it adds a decimal
-        case "decimal": updateDisplayNum("."); break;
+        case "decimal": addDigit("."); break;
         case "backspace": eraseLastNum(); break;
         case "compute": compute(); break;
     }
@@ -238,21 +231,21 @@ document.addEventListener('keydown', (event) => {
 
     switch (event.key) {
         case "Escape": clear(); break;
-        case "_": negatedDisplayNum(); break;
+        case "_": negateDisplay(); break;
         case "%": percentageOfDisplayNum(); break;
 
 
 
-        case "0": updateDisplayNum("0"); break;
-        case "1": updateDisplayNum("1"); break;
-        case "2": updateDisplayNum("2"); break;
-        case "3": updateDisplayNum("3"); break;
-        case "4": updateDisplayNum("4"); break;
-        case "5": updateDisplayNum("5"); break;
-        case "6": updateDisplayNum("6"); break;
-        case "7": updateDisplayNum("7"); break;
-        case "8": updateDisplayNum("8"); break;
-        case "9": updateDisplayNum("9"); break;
+        case "0": addDigit("0"); break;
+        case "1": addDigit("1"); break;
+        case "2": addDigit("2"); break;
+        case "3": addDigit("3"); break;
+        case "4": addDigit("4"); break;
+        case "5": addDigit("5"); break;
+        case "6": addDigit("6"); break;
+        case "7": addDigit("7"); break;
+        case "8": addDigit("8"); break;
+        case "9": addDigit("9"); break;
 
         case "+": updateOperator("+"); break;
         case "-": updateOperator("-"); break;
@@ -260,7 +253,7 @@ document.addEventListener('keydown', (event) => {
         case "/": updateOperator("/"); break;
 
         //Every time I hit this button it adds a decimal
-        case ".": updateDisplayNum("."); break;
+        case ".": addDigit("."); break;
         case "Enter": compute(); break;
     }
 });
