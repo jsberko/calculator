@@ -28,6 +28,9 @@ function divide(a, b) {
     }
 }
 
+//Idea: Current operator user button "lights up"
+
+
 function operate(num1, num2, currentOperator, onDeckOperator) {
     let result;
 
@@ -179,3 +182,35 @@ container.addEventListener("click", (event) => {
         case "compute": compute(); break;
     }
 })
+
+document.addEventListener('keydown', (event) => {
+    console.log(event.key);
+
+    switch (event.key) {
+        case "Escape": clear(); break;
+        case "_": negatedDisplayNum(); break;
+        case "%": percentageOfDisplayNum(); break;
+
+
+
+        case "0": updateDisplayNum("0"); break;
+        case "1": updateDisplayNum("1"); break;
+        case "2": updateDisplayNum("2"); break;
+        case "3": updateDisplayNum("3"); break;
+        case "4": updateDisplayNum("4"); break;
+        case "5": updateDisplayNum("5"); break;
+        case "6": updateDisplayNum("6"); break;
+        case "7": updateDisplayNum("7"); break;
+        case "8": updateDisplayNum("8"); break;
+        case "9": updateDisplayNum("9"); break;
+
+        case "+": updateOperator("+"); break;
+        case "-": updateOperator("-"); break;
+        case "*": updateOperator("*"); break;
+        case "/": updateOperator("/"); break;
+
+        //Every time I hit this button it adds a decimal
+        case ".": updateDisplayNum("."); break;
+        case "Enter": compute(); break;
+    }
+});
