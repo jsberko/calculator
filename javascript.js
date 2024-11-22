@@ -126,12 +126,14 @@ function compute(onDeckOperator) {
     }
 }
 
-function addDigit(num) {
+function addDigit(digitInput) {
     //Conditional to stop user from filling the display with zeros
-    if (currentDisplay === "" && num === "0") {
+    if (currentDisplay === "" && digitInput === "0") {
         console.log("User trying to stack 0's")
+    } else if (currentDisplay === "0" && digitInput !== "0") {
+        currentDisplay = "";
     } else {
-        currentDisplay += num;
+        currentDisplay += digitInput;
         updateDisplay(currentDisplay);
     }
 }
