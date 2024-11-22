@@ -104,9 +104,9 @@ function clearDisplay() {
     updateDisplay("0");
 }
 
-function getDisplay() {
-    currentDisplay = display.textContent;
-}
+// function getDisplay() {
+//     currentDisplay = display.textContent;
+// }
 
 
 function compute(onDeckOperator) {
@@ -121,8 +121,9 @@ function compute(onDeckOperator) {
 }
 
 function addDigit(digitInput) {
-    //Conditional to stop user from filling the display with zeros
-    if (currentDisplay === "" && digitInput === "0") {
+    if (digitInput === "." && checkForDecimals(currentDisplay)) {
+        console.log("User trying to stack .'s")
+    } else if (currentDisplay === "" && digitInput === "0") {
         console.log("User trying to stack 0's")
     } else if (currentDisplay === "0" && digitInput !== "0") {
         currentDisplay = "";
@@ -148,23 +149,32 @@ function negateDisplay() {
 
 //If I hit this button twice it adds another decimal
 function percentageOfCurrentDisplay() {
-    if (currentDisplay.length <= 1) {
-        currentDisplay = `0.0${currentDisplay}`;
-    } else if (currentDisplay.length <= 2) {
-        currentDisplay = `0.${currentDisplay}`;
-    } else if (currentDisplay.length >= 3) {
-        let currentDisplayArr = currentDisplay.split("");
-        let spliceIndex = currentDisplayArr.length - 2;
-        currentDisplayArr.splice(spliceIndex, 0, ".");
 
-        currentDisplay = currentDisplayArr.join("");
+    if (currentDisplay === "0") {
+        console.log("% of 0 is 0");
     }
-    updateDisplay(currentDisplay);
+    else if (checkForDecimals(currentDisplay) === false) {
+        console.log("There is already a decimal in the display");
+        if (currentDisplay.length <= 1) {
+            currentDisplay = `0.0${currentDisplay}`;
+        } else if (currentDisplay.length <= 2) {
+            currentDisplay = `0.${currentDisplay}`;
+        } else if (currentDisplay.length >= 3) {
+            let currentDisplayArr = currentDisplay.split("");
+            let spliceIndex = currentDisplayArr.length - 2;
+            currentDisplayArr.splice(spliceIndex, 0, ".");
+
+            currentDisplay = currentDisplayArr.join("");
+        }
+        updateDisplay(currentDisplay);
+    }
+}
+
+function checkForDecimals(string) {
+    return string.includes(".");
 }
 
 function eraseLastNum() {
-    getDisplay();
-
     if (currentDisplay !== "0") {
         const indexToRemove = currentDisplay.length - 1;
         const newDisplayNum = currentDisplay.slice(0, indexToRemove);
@@ -197,7 +207,7 @@ container.addEventListener("click", (event) => {
     switch (target.id) {
         case "AC": clear(); break;
         case "negate": negateDisplay(); break;
-        case "percent": percentageOfDisplayNum(); break;
+        case "percent": percentageOfCurrentDisplay(); break;
 
 
 
@@ -230,7 +240,7 @@ document.addEventListener('keydown', (event) => {
     switch (event.key) {
         case "Escape": clear(); break;
         case "_": negateDisplay(); break;
-        case "%": percentageOfDisplayNum(); break;
+        case "%": percentageOfCurrentDisplay(); break;
 
 
 
