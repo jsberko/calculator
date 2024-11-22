@@ -34,8 +34,6 @@ function divide(a, b) {
     }
 }
 
-//Idea: Current operator user button "lights up"
-
 
 function operate(num1, num2, currentOperator, onDeckOperator) {
     let result;
@@ -73,14 +71,10 @@ function updateOperator(operatorType) {
         currentDisplay = "";
         currentOperator = operatorType;
         selectOperatorButton(currentOperator);
-    }
-    //Capturing num1 first time
-    else if (num1 && !currentOperator) {
+    } else if (num1 && !currentOperator) {
         currentOperator = operatorType;
         selectOperatorButton(currentOperator);
-    }
-
-    else if (num1 && num2 === null && currentOperator) {
+    } else if (num1 && num2 === null && currentOperator) {
         onDeckOperator = operatorType;
         selectOperatorButton(onDeckOperator);
         compute(onDeckOperator);
@@ -132,6 +126,8 @@ function addDigit(digitInput) {
         console.log("User trying to stack 0's")
     } else if (currentDisplay === "0" && digitInput !== "0") {
         currentDisplay = "";
+        currentDisplay += digitInput;
+        updateDisplay(currentDisplay);
     } else {
         currentDisplay += digitInput;
         updateDisplay(currentDisplay);
@@ -173,20 +169,20 @@ function eraseLastNum() {
         const indexToRemove = currentDisplay.length - 1;
         const newDisplayNum = currentDisplay.slice(0, indexToRemove);
         currentDisplay = newDisplayNum;
+        updateDisplay(currentDisplay);
 
         if (currentDisplay === "") {
-            currentDisplay = "0";
+            clear();
         }
-        updateDisplay(currentDisplay);
     }
 }
 
 function clear() {
-    display.textContent = "0"
+    updateDisplay("0");
     num1 = null;
+    num2 = null;
     currentOperator = null;
     onDeckOperator = null;
-    num2 = null;
     currentDisplay = "";
     clearOperatorButtons()
 }
