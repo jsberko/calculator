@@ -51,9 +51,62 @@ function operate(num1, num2, currentOperator, onDeckOperator) {
     if (currentOperator === "/") {
         result = divide(num1, num2);
     }
-    updateDisplay(`${result}`);
+
+    // result = evaluateResult(result);
+
+    evaluateDisplay(`${result}`);
     updateVariables(result, onDeckOperator);
 }
+
+// You should round answers with long decimals so that they don’t overflow the display.
+function evaluateDisplay(text) {
+    if (text.length > 12 && decimalCheck(text) == false) {
+        console.log(text.length);
+        updateDisplay("Overflow");
+    }
+    if (text.length > 12 && decimalCheck(text) == true) {
+        roundDecimal(text)
+    }
+    else (
+        updateDisplay(text)
+    )
+}
+
+function decimalCheck(text) {
+    console.log("Decimal Check activated");
+    console.log(`Decimal Check Results: ${text.includes(".")}`)
+    return text.includes(".");
+}
+
+function roundDecimal(text) {
+    let resultLength = text.length;
+    // console.log(resultLength);
+    let decimalIndex = text.indexOf(".");
+    // console.log(decimalIndex);
+    let placeValue = 11 - decimalIndex;
+    // console.log(placeValue);
+    let roundedResult = roundToPlace(text, placeValue).toString();
+    console.log(roundedResult);
+
+    updateDisplay(roundedResult);
+
+    function roundToPlace(number, place) {
+        const multiplier = Math.pow(10, place);
+        return Math.round(number * multiplier) / multiplier;
+    }
+}
+
+function updateDisplay(text) {
+    display.textContent = text;
+}
+
+// function evaluateResult(result) {
+//     if (result.length > 12) {
+//         return = "Overflow";
+//     } else {
+//         return result;
+//     }
+// }
 
 
 function updateVariables(result, onDeckOperator) {
@@ -120,6 +173,8 @@ function compute(onDeckOperator) {
     }
 }
 
+
+
 function addDigit(digitInput) {
     if (digitInput === "." && checkForDecimals(currentDisplay)) {
         console.log("User trying to stack .'s")
@@ -128,15 +183,13 @@ function addDigit(digitInput) {
     } else if (currentDisplay === "0" && digitInput !== "0") {
         currentDisplay = "";
         currentDisplay += digitInput;
-        updateDisplay(currentDisplay);
+        evaluateDisplay(currentDisplay);
     } else {
-        currentDisplay += digitInput;
-        updateDisplay(currentDisplay);
+        if (currentDisplay.length < 11) {
+            currentDisplay += digitInput;
+            evaluateDisplay(currentDisplay)
+        }
     }
-}
-
-function updateDisplay(text) {
-    display.textContent = text;
 }
 
 //Does not work when a calculation result is displayed
