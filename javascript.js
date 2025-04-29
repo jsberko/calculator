@@ -17,7 +17,7 @@ let currentOperator = null;
 let onDeckOperator = null;
 let currentDisplay = "";
 
-
+let result = null;
 
 // Functions
 function add(a, b) { return a + b; }
@@ -36,7 +36,7 @@ function divide(a, b) {
 
 
 function operate(num1, num2, currentOperator, onDeckOperator) {
-    let result;
+    // let result;
 
     if (currentOperator === "+") {
         result = add(num1, num2);
@@ -52,13 +52,19 @@ function operate(num1, num2, currentOperator, onDeckOperator) {
         result = divide(num1, num2);
     }
 
-    // result = evaluateResult(result);
-
     evaluateDisplay(`${result}`);
     updateVariables(result, onDeckOperator);
 }
 
-// You should round answers with long decimals so that they don’t overflow the display.
+
+function updateVariables(result, onDeckOperator) {
+    num1 = result;
+    num2 = null;
+    currentOperator = onDeckOperator;
+    currentDisplay = "";
+}
+
+
 function evaluateDisplay(text) {
     if (text.length > 12 && decimalCheck(text) == false) {
         console.log(text.length);
@@ -98,22 +104,6 @@ function roundDecimal(text) {
 
 function updateDisplay(text) {
     display.textContent = text;
-}
-
-// function evaluateResult(result) {
-//     if (result.length > 12) {
-//         return = "Overflow";
-//     } else {
-//         return result;
-//     }
-// }
-
-
-function updateVariables(result, onDeckOperator) {
-    num1 = result;
-    num2 = null;
-    currentOperator = onDeckOperator;
-    currentDisplay = "";
 }
 
 //If I press multiple operator buttons in a row weird things happen
@@ -157,10 +147,6 @@ function clearDisplay() {
     updateDisplay("0");
 }
 
-// function getDisplay() {
-//     currentDisplay = display.textContent;
-// }
-
 
 function compute(onDeckOperator) {
     clearOperatorButtons();
@@ -171,6 +157,7 @@ function compute(onDeckOperator) {
 
         operate(num1, num2, currentOperator, onDeckOperator);
     }
+
 }
 
 
@@ -184,6 +171,11 @@ function addDigit(digitInput) {
         currentDisplay = "";
         currentDisplay += digitInput;
         evaluateDisplay(currentDisplay);
+    } else if (result === num1 && result !== null) {
+        console.log("Time to reset for new equation");
+        num1 = null;
+        currentDisplay = digitInput;
+        evaluateDisplay(currentDisplay)
     } else {
         if (currentDisplay.length < 11) {
             currentDisplay += digitInput;
@@ -246,6 +238,7 @@ function clear() {
     num2 = null;
     currentOperator = null;
     onDeckOperator = null;
+    result = null;
     currentDisplay = "";
     clearOperatorButtons()
 }
