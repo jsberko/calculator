@@ -1,247 +1,4 @@
-// Selectors
-const container = document.querySelector(".container");
-const display = document.querySelector(".display");
-const decimalButton = document.querySelector("#decimal");
-const backspaceButton = document.querySelector("#backspace");
 
-const addButton = document.querySelector("#add");
-const subtractButton = document.querySelector("#subtract");
-const multiplyButton = document.querySelector("#multiply");
-const divideButton = document.querySelector("#divide");
-
-
-// Variables
-let num1 = null;
-let num2 = null;
-let currentOperator = null;
-let onDeckOperator = null;
-let currentDisplay = "";
-
-let result = null;
-
-// Functions
-function add(a, b) { return a + b; }
-
-function subtract(a, b) { return a - b; }
-
-function multiply(a, b) { return a * b; }
-
-function divide(a, b) {
-    if (b === 0) {
-        return "Nice try";
-    } else {
-        return a / b;
-    }
-}
-
-
-function operate(num1, num2, currentOperator, onDeckOperator) {
-    // let result;
-
-    if (currentOperator === "+") {
-        result = add(num1, num2);
-    }
-    if (currentOperator === "-") {
-        result = subtract(num1, num2);
-    }
-
-    if (currentOperator === "*") {
-        result = multiply(num1, num2);
-    }
-    if (currentOperator === "/") {
-        result = divide(num1, num2);
-    }
-
-    evaluateDisplay(`${result}`);
-    updateVariables(result, onDeckOperator);
-}
-
-
-function updateVariables(result, onDeckOperator) {
-    num1 = result;
-    num2 = null;
-    currentOperator = onDeckOperator;
-    currentDisplay = "";
-}
-
-
-function evaluateDisplay(text) {
-    if (text.length > 12 && decimalCheck(text) == false) {
-        console.log(text.length);
-        updateDisplay("Overflow");
-    }
-    if (text.length > 12 && decimalCheck(text) == true) {
-        roundDecimal(text)
-    }
-    else (
-        updateDisplay(text)
-    )
-}
-
-function decimalCheck(text) {
-    console.log("Decimal Check activated");
-    console.log(`Decimal Check Results: ${text.includes(".")}`)
-    return text.includes(".");
-}
-
-function roundDecimal(text) {
-    let resultLength = text.length;
-    // console.log(resultLength);
-    let decimalIndex = text.indexOf(".");
-    // console.log(decimalIndex);
-    let placeValue = 11 - decimalIndex;
-    // console.log(placeValue);
-    let roundedResult = roundToPlace(text, placeValue).toString();
-    console.log(roundedResult);
-
-    updateDisplay(roundedResult);
-
-    function roundToPlace(number, place) {
-        const multiplier = Math.pow(10, place);
-        return Math.round(number * multiplier) / multiplier;
-    }
-}
-
-function updateDisplay(text) {
-    display.textContent = text;
-}
-
-//If I press multiple operator buttons in a row weird things happen
-function updateOperator(operatorType) {
-    //Capturing num1 first time
-    if (num1 === null) {
-        num1 = currentDisplay;
-        currentDisplay = "";
-        currentOperator = operatorType;
-        selectOperatorButton(currentOperator);
-    } else if (num1 && !currentOperator) {
-        currentOperator = operatorType;
-        selectOperatorButton(currentOperator);
-    } else if (num1 && num2 === null && currentOperator) {
-        onDeckOperator = operatorType;
-        selectOperatorButton(onDeckOperator);
-        compute(onDeckOperator);
-    }
-}
-
-function selectOperatorButton(currentOperator) {
-    clearOperatorButtons();
-
-    switch (currentOperator) {
-        case "+": addButton.classList.add("highlight"); break;
-        case "-": subtractButton.classList.add("highlight"); break;
-        case "*": multiplyButton.classList.add("highlight"); break;
-        case "/": divideButton.classList.add("highlight"); break;
-    }
-}
-
-function clearOperatorButtons() {
-    addButton.classList.remove("highlight");
-    subtractButton.classList.remove("highlight");
-    multiplyButton.classList.remove("highlight");
-    divideButton.classList.remove("highlight");
-}
-
-
-function clearDisplay() {
-    updateDisplay("0");
-}
-
-
-function compute(onDeckOperator) {
-    clearOperatorButtons();
-    if (num1 && currentOperator) {
-        num2 = currentDisplay;
-        num1 = +num1;
-        num2 = +num2;
-
-        operate(num1, num2, currentOperator, onDeckOperator);
-    }
-
-}
-
-
-
-function addDigit(digitInput) {
-    if (digitInput === "." && checkForDecimals(currentDisplay)) {
-        console.log("User trying to stack .'s")
-    } else if (currentDisplay === "" && digitInput === "0") {
-        console.log("User trying to stack 0's")
-    } else if (currentDisplay === "0" && digitInput !== "0") {
-        currentDisplay = "";
-        currentDisplay += digitInput;
-        evaluateDisplay(currentDisplay);
-    } else if (result === num1 && result !== null) {
-        console.log("Time to reset for new equation");
-        num1 = null;
-        currentDisplay = digitInput;
-        evaluateDisplay(currentDisplay)
-    } else {
-        if (currentDisplay.length < 11) {
-            currentDisplay += digitInput;
-            evaluateDisplay(currentDisplay)
-        }
-    }
-}
-
-//Does not work when a calculation result is displayed
-function negateDisplay() {
-    currentDisplay = (currentDisplay * -1).toString();
-
-    updateDisplay(currentDisplay);
-}
-
-
-//If I hit this button twice it adds another decimal
-function percentageOfCurrentDisplay() {
-
-    if (currentDisplay === "0") {
-        console.log("% of 0 is 0");
-    }
-    else if (checkForDecimals(currentDisplay) === false) {
-        console.log("There is already a decimal in the display");
-        if (currentDisplay.length <= 1) {
-            currentDisplay = `0.0${currentDisplay}`;
-        } else if (currentDisplay.length <= 2) {
-            currentDisplay = `0.${currentDisplay}`;
-        } else if (currentDisplay.length >= 3) {
-            let currentDisplayArr = currentDisplay.split("");
-            let spliceIndex = currentDisplayArr.length - 2;
-            currentDisplayArr.splice(spliceIndex, 0, ".");
-
-            currentDisplay = currentDisplayArr.join("");
-        }
-        updateDisplay(currentDisplay);
-    }
-}
-
-function checkForDecimals(string) {
-    return string.includes(".");
-}
-
-function eraseLastNum() {
-    if (currentDisplay !== "0") {
-        const indexToRemove = currentDisplay.length - 1;
-        const newDisplayNum = currentDisplay.slice(0, indexToRemove);
-        currentDisplay = newDisplayNum;
-        updateDisplay(currentDisplay);
-
-        if (currentDisplay === "") {
-            clear();
-        }
-    }
-}
-
-function clear() {
-    updateDisplay("0");
-    num1 = null;
-    num2 = null;
-    currentOperator = null;
-    onDeckOperator = null;
-    result = null;
-    currentDisplay = "";
-    clearOperatorButtons()
-}
 
 
 // Event Listeners
@@ -251,11 +8,9 @@ container.addEventListener("click", (event) => {
     let target = event.target;
 
     switch (target.id) {
-        case "AC": clear(); break;
+        case "AC": clearProgram("0"); break;
         case "negate": negateDisplay(); break;
         case "percent": percentageOfCurrentDisplay(); break;
-
-
 
         case "zero": addDigit("0"); break;
         case "one": addDigit("1"); break;
@@ -274,7 +29,7 @@ container.addEventListener("click", (event) => {
         case "divide": updateOperator("/"); break;
 
         //Every time I hit this button it adds a decimal
-        case "decimal": addDigit("."); break;
+        case "decimal": addDecimal("."); break;
         case "backspace": eraseLastNum(); break;
         case "compute": compute(); break;
     }
@@ -287,8 +42,6 @@ document.addEventListener('keydown', (event) => {
         case "Escape": clear(); break;
         case "_": negateDisplay(); break;
         case "%": percentageOfCurrentDisplay(); break;
-
-
 
         case "0": addDigit("0"); break;
         case "1": addDigit("1"); break;
@@ -307,7 +60,231 @@ document.addEventListener('keydown', (event) => {
         case "/": updateOperator("/"); break;
 
         //Every time I hit this button it adds a decimal
-        case ".": addDigit("."); break;
+        case ".": addDecimal("."); break;
         case "Enter": compute(); break;
     }
 });
+
+
+// Refactor 2"
+// const container = document.querySelector(".container");
+// const display = document.querySelector(".display");
+// const decimalButton = document.querySelector("#decimal");
+// const backspaceButton = document.querySelector("#backspace");
+
+// const addButton = document.querySelector("#add");
+// const subtractButton = document.querySelector("#subtract");
+// const multiplyButton = document.querySelector("#multiply");
+// const divideButton = document.querySelector("#divide");
+
+
+// Variables
+// let num1 = false;
+// let num2 = false;
+// let currentOperator = false;
+// let timeToAddNum2 = false;
+// let timeToCompute = false;
+// let answer = false;
+// let equationInProgress = false;
+
+// Math Operation Functions
+// function add(a, b) { return a + b };
+// function subtract(a, b) { return a - b };
+// function multiply(a, b) { return a * b };
+// function divide(a, b) { return a / b };
+
+
+// Program Operation Functions
+
+// function addDigit(numStr) {
+
+//     if (displayIsZero() && !num1) {
+//         removeZero();
+//     } else if (captureDisplay() === "Nice Try") {
+//         clearDisplay();
+//     } else if (timeToAddNum2 || equationInProgress) {
+//         console.log("On to num2");
+
+//         if (timeToAddNum2) {
+//             console.log("Adding number 2");
+//             timeToAddNum2 = false;
+//             clearDisplay();
+//         }
+//     }
+
+//     addToDisplay(numStr);
+// }
+
+
+// function updateOperator(operator) {
+
+//     if (!num1 && captureDisplay() !== "0") {
+//         captureNum1();
+//         timeToAddNum2 = true;
+//         timeToCompute = true;
+//         console.log("timeToAddNum2: True");
+//     } else if (num1) {
+//         captureNum2();
+//         compute();
+//     }
+
+//     currentOperator = operator;
+// }
+
+
+// function compute() {
+//     console.log("compute() called");
+//     // Capture num2 and run operation
+//     if (!num2 && captureDisplay() !== "Nice Try") {
+//         console.log("Capture num2 and run operation");
+//         captureNum2();
+//         // clearDisplay();
+//         num1 = +num1;
+//         num2 = +num2;
+
+//         operate(num1, num2, currentOperator);
+//     }
+// User using operator buttons to compute (num2 already captured)
+//     else if (num1 !== captureDisplay() && num2) {
+//         console.log("Already have num2");
+//         // clearDisplay();
+//         num1 = +num1;
+//         num2 = +num2;
+
+//         operate(num1, num2, currentOperator);
+//     }
+// }
+
+
+// function operate(num1, num2, currentOperator) {
+//     console.log("operate() called");
+//     let result;
+
+//     if (currentOperator === "/" && num2 === 0) {
+//         clearProgram("Nice Try");
+//         return;
+//     }
+
+//     if (currentOperator === "+") { result = add(num1, num2); }
+//     if (currentOperator === "-") { result = subtract(num1, num2) }
+//     if (currentOperator === "*") { result = multiply(num1, num2) }
+//     if (currentOperator === "/") { result = divide(num1, num2) }
+
+//     let answer = result.toString();
+
+//     clearDisplay();
+//     addToDisplay(answer);
+//     useAnswerForNextEquation();
+// }
+
+// function evaluateVariables() { }
+
+// function evaluateResult(result) { }
+
+// function addDecimal() {
+//     let decimalPresent = false;
+//     //Check for decimal
+//     if (display.textContent.includes(".")) {
+//         decimalPresent = true;
+//     }
+// If there is no decimal and the display is zero, add a decimal
+// else if (!decimalPresent && displayIsZero()) {
+//     updateDisplay(".")
+// }
+// Else, add a decimal
+//     else {
+//         updateDisplay(".")
+//     }
+// }
+
+// function roundDecimalCheck(result) {
+//     let resultStr = result.toString();
+
+//     if (resultStr.length > 11 && resultStr.includes(".")) {
+//         let decimalIndex = resultStr.indexOf(".");
+//         let placeValue = 11 - decimalIndex;
+
+//         let roundedResult = roundToPlace(result, placeValue).toString();
+//         return roundedResult;
+//     }
+//     else { return result }
+
+
+
+//     function roundToPlace(number, place) {
+//         const multiplier = Math.pow(10, place);
+//         return Math.round(number * multiplier) / multiplier;
+//     }
+// }
+
+// Program Helper Functions
+// function readyToAddNum2() {
+//     return num1 && currentOperator && !timeToAddNum2;
+// }
+
+// function captureNum1() {
+//     console.log("captureNum1() called");
+//     num1 = captureDisplay();
+// console.log(`Num1 = ${num1}`);
+// }
+
+// function captureNum2() {
+//     console.log("captureNum2() called");
+//     num2 = captureDisplay();
+// console.log(`Num2 = ${num2}`);
+// }
+
+// function useAnswerForNextEquation() {
+//     console.log("useAnswerForNextEquation() called");
+//     num1 = captureDisplay();
+//     num2 = false;
+//     currentOperator = false;
+//     timeToAddNum2 = false;
+//     timeToCompute = false;
+//     equationInProgress = true;
+// }
+
+
+// function clearProgram(str) {
+//     console.log("clearProgram() called");
+//     display.textContent = str;
+//     num1 = false;
+//     num2 = false;
+//     currentOperator = false;
+//     timeToAddNum2 = false;
+//     timeToCompute = false;
+//     answer = false;
+//     equationInProgress = false;
+// }
+
+
+// Display Functions
+
+// function addToDisplay(numStr) {
+//Check to make sure number fits the display
+//     if (fitsDisplay()) {
+//         display.textContent += numStr;
+//     } else {
+//         console.log("Does not fit display");
+//     }
+// }
+
+// function captureDisplay() {
+//     return display.textContent;
+// }
+
+// function displayIsZero() {
+//     return display.textContent === "0";
+// }
+
+// function clearDisplay() {
+//     display.textContent = "";
+// }
+
+// function fitsDisplay(numStr) {
+//     return display.textContent.length < 11;
+// }
+
+// function removeZero() {
+//     display.textContent = "";
+// }
