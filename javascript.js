@@ -9,9 +9,17 @@ function subtract(a, b) { return a - b };
 function multiply(a, b) { return a * b };
 function divide(a, b) { return a / b };
 
-// function operate(num1, num2, operator) {
-//     if 
-// }
+// Takes 2 numbers and a string operator and returns a number
+function operate(num1, num2, operator) {
+    let result;
+
+    if (operator === "+") { result = add(num1, num2) };
+    if (operator === "-") { result = subtract(num1, num2) };
+    if (operator === "*") { result = multiply(num1, num2) };
+    if (operator === "/") { result = divide(num1, num2) };
+
+    return result;
+}
 
 
 // Event Listeners
