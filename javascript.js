@@ -1,7 +1,13 @@
+// Query Selectors
+const container = document.querySelector(".container");
+const display = document.querySelector(".display");
+
+
 // Variables
 let num1 = 3;
 let num2 = 5;
 let operator = "+";
+
 
 // Math Operation Functions
 function add(a, b) { return a + b };
@@ -19,6 +25,12 @@ function operate(num1, num2, operator) {
     if (operator === "/") { result = divide(num1, num2) };
 
     return result;
+}
+
+
+// Screen Functions
+function addDigit(strNum) {
+    display.textContent += strNum;
 }
 
 
