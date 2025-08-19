@@ -4,9 +4,9 @@ const display = document.querySelector(".display");
 
 
 // Variables
-let num1 = 3;
-let num2 = 5;
-let operator = "+";
+let num1;
+let num2;
+let currentOperator;
 
 
 // Math Operation Functions
@@ -15,7 +15,7 @@ function subtract(a, b) { return a - b };
 function multiply(a, b) { return a * b };
 function divide(a, b) { return a / b };
 
-// Takes 2 numbers and a string operator and returns a number
+
 function operate(num1, num2, operator) {
     let result;
 
@@ -27,10 +27,80 @@ function operate(num1, num2, operator) {
     return result;
 }
 
+//This function is doing a lot
+function compute() {
+    if (captureDisplay() !== num1) {
+        assignNum2();
+        let result = operate(num1, num2, currentOperator);
+        updateDisplay(result);
+        num1 = result;
+        num2 = undefined;
+    }
+}
+
+
+
+
+// Program Functions
+function clearProgram(str) {
+    num1 = undefined;
+    num2 = undefined;
+    currentOperator = undefined;
+    clearDisplay();
+    updateDisplay(str);
+}
+
+function updateOperator(operatorInput) {
+    if (!displayIsZero() && !num1) {
+        assignNum1()
+    }
+    //
+    if (captureDisplay() !== num1) {
+        compute()
+    }
+    assignOperand(operatorInput);
+}
+
+
+function assignNum1() {
+    num1 = captureDisplay();
+}
+
+function assignNum2() {
+    num2 = captureDisplay();
+}
+
+function assignOperand(operatorInput) {
+    currentOperator = operatorInput;
+}
 
 // Screen Functions
 function addDigit(strNum) {
+    if (displayIsZero()) {
+        clearDisplay();
+    }
+    // Conditional to allow for adding num2
+    if (num1 === captureDisplay()) {
+        clearDisplay();
+    }
+
     display.textContent += strNum;
+}
+
+function displayIsZero() {
+    return display.textContent === "0";
+}
+
+function clearDisplay() {
+    display.textContent = "";
+}
+
+function captureDisplay() {
+    return +(display.textContent);
+}
+
+function updateDisplay(message) {
+    display.textContent = message;
 }
 
 
