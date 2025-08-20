@@ -3,10 +3,12 @@ const container = document.querySelector(".container");
 const display = document.querySelector(".display");
 
 
+
 // Variables
 let num1;
 let num2;
 let currentOperator;
+
 
 
 // Math Operation Functions
@@ -29,7 +31,7 @@ function operate(num1, num2, operator) {
 
 //This function is doing a lot
 function compute() {
-    if (captureDisplay() !== num1) {
+    if (num1 && currentOperator && captureDisplay() !== num1 && captureDisplay() !== 0) {
         assignNum2();
         let result = operate(num1, num2, currentOperator);
         updateDisplay(result);
@@ -37,7 +39,6 @@ function compute() {
         num2 = undefined;
     }
 }
-
 
 
 
@@ -50,17 +51,29 @@ function clearProgram(str) {
     updateDisplay(str);
 }
 
+function addDigit(strNum) {
+    if (displayIsZero()) {
+        clearDisplay();
+    }
+    // Conditional to allow for adding num2
+    if (num1 === captureDisplay()) {
+        clearDisplay();
+    }
+
+    display.textContent += strNum;
+}
+
 function updateOperator(operatorInput) {
     if (!displayIsZero() && !num1) {
         assignNum1()
     }
     //
     if (captureDisplay() !== num1) {
+        // This makes it so that I can't divide 5 by 5...or similar
         compute()
     }
     assignOperand(operatorInput);
 }
-
 
 function assignNum1() {
     num1 = captureDisplay();
@@ -74,19 +87,28 @@ function assignOperand(operatorInput) {
     currentOperator = operatorInput;
 }
 
-// Screen Functions
-function addDigit(strNum) {
-    if (displayIsZero()) {
-        clearDisplay();
-    }
-    // Conditional to allow for adding num2
-    if (num1 === captureDisplay()) {
-        clearDisplay();
-    }
 
-    display.textContent += strNum;
+// Feature Functions
+function evaluateDisplayLength() {
+    return display.textContent.length;
 }
 
+function addDecimal(str) {
+    if (!containsDecimal()) {
+        display.textContent += str;
+    }
+}
+
+function findDecimalIndex() {
+    return display.textContent.indexOf(".");
+}
+
+function containsDecimal() {
+    return display.textContent.includes(".");
+}
+
+
+// Screen Functions
 function displayIsZero() {
     return display.textContent === "0";
 }
@@ -102,6 +124,7 @@ function captureDisplay() {
 function updateDisplay(message) {
     display.textContent = message;
 }
+
 
 
 // Event Listeners
