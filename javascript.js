@@ -26,7 +26,12 @@ function operate(num1, num2, operator) {
     if (operator === "*") { result = multiply(num1, num2) };
     if (operator === "/") { result = divide(num1, num2) };
 
-    return result;
+    if (result.toString().length < 11) {
+        return result;
+    } else {
+        let resultLength = result.toString().length;
+        roundResult(result, resultLength);
+    }
 }
 
 //This function is doing a lot
@@ -52,15 +57,21 @@ function clearProgram(str) {
 }
 
 function addDigit(strNum) {
-    if (displayIsZero()) {
-        clearDisplay();
-    }
-    // Conditional to allow for adding num2
-    if (num1 === captureDisplay()) {
-        clearDisplay();
-    }
+    if (displayLength() < 11) {
+        if (displayIsZero()) {
+            clearDisplay();
+        }
+        // Conditional to allow for adding num2
+        if (num1 === captureDisplay()) {
+            clearDisplay();
+        }
 
-    display.textContent += strNum;
+        display.textContent += strNum;
+    }
+}
+
+function displayLength() {
+    return display.textContent.length;
 }
 
 function updateOperator(operatorInput) {
@@ -89,6 +100,13 @@ function assignOperand(operatorInput) {
 
 
 // Feature Functions
+function roundResult(result, resultLength) {
+    console.log("roundResult function launched")
+    console.log(result);
+    console.log(resultLength);
+}
+
+
 function evaluateDisplayLength() {
     return display.textContent.length;
 }
@@ -103,8 +121,8 @@ function findDecimalIndex() {
     return display.textContent.indexOf(".");
 }
 
-function containsDecimal() {
-    return display.textContent.includes(".");
+function containsDecimal(result) {
+    return result.includes(".");
 }
 
 
