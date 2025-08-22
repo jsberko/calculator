@@ -15,7 +15,11 @@ let currentOperator;
 function add(a, b) { return a + b };
 function subtract(a, b) { return a - b };
 function multiply(a, b) { return a * b };
-function divide(a, b) { return a / b };
+function divide(a, b) {
+    if (b === 0) {
+        return "Nice Try";
+    } else { return a / b; }
+}
 
 
 function operate(num1, num2, operator) {
@@ -26,17 +30,18 @@ function operate(num1, num2, operator) {
     if (operator === "*") { result = multiply(num1, num2) };
     if (operator === "/") { result = divide(num1, num2) };
 
-    if (result.toString().length < 11) {
-        return result;
-    } else {
-        let resultLength = result.toString().length;
-        roundResult(result, resultLength);
-    }
+    return result;
+    // if (result.toString().length < 11) {
+    //     return result;
+    // } else {
+    //     let resultLength = result.toString().length;
+    //     roundResult(result, resultLength);
+    // }
 }
 
-//This function is doing a lot
+//Assess behavior when compute key pressed 2+ times in a row
 function compute() {
-    if (num1 && currentOperator && captureDisplay() !== num1 && captureDisplay() !== 0) {
+    if (num1 && currentOperator && !niceTry()) {
         assignNum2();
         let result = operate(num1, num2, currentOperator);
         updateDisplay(result);
@@ -57,7 +62,7 @@ function clearProgram(str) {
 }
 
 function addDigit(strNum) {
-    if (displayLength() < 11) {
+    if (displayLength() < 11 && !niceTry()) {
         if (displayIsZero()) {
             clearDisplay();
         }
@@ -70,20 +75,32 @@ function addDigit(strNum) {
     }
 }
 
+function eraseLastNum() {
+    if (captureDisplay() !== 0) {
+        if (display.textContent.length === 1) {
+            updateDisplay("0");
+        } else {
+            updateDisplay(display.textContent.slice(0, -1));
+        }
+    }
+}
+
 function displayLength() {
     return display.textContent.length;
 }
 
 function updateOperator(operatorInput) {
-    if (!displayIsZero() && !num1) {
-        assignNum1()
+    if (!niceTry()) {
+        if (!displayIsZero() && !num1) {
+            assignNum1()
+        }
+        //
+        if (captureDisplay() !== num1) {
+            // This makes it so that I can't divide 5 by 5...or similar
+            compute()
+        }
+        assignOperand(operatorInput);
     }
-    //
-    if (captureDisplay() !== num1) {
-        // This makes it so that I can't divide 5 by 5...or similar
-        compute()
-    }
-    assignOperand(operatorInput);
 }
 
 function assignNum1() {
@@ -139,6 +156,10 @@ function captureDisplay() {
     return +(display.textContent);
 }
 
+function niceTry() {
+    return display.textContent === "Nice Try";
+}
+
 function updateDisplay(message) {
     display.textContent = message;
 }
@@ -146,6 +167,8 @@ function updateDisplay(message) {
 
 
 // Event Listeners
+
+//A way to lock all keys except "AC" if display.textContent === "Nice Try"?
 document.addEventListener("DOMContentLoaded", () => display.textContent = "0");
 
 container.addEventListener("click", (event) => {
