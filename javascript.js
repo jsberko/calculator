@@ -54,7 +54,7 @@ function addDigit(strNum) {
         readyToCalculate = true;
     }
 
-    // Default behavior, including check to prevent overflowing display
+    // Default behavior, including check to prevent input from overflowing display
     if (displayLength() < 11) {
         display.textContent += strNum;
     }
@@ -68,10 +68,6 @@ function updateOperator(operatorInput) {
 
     // Performing a running calculation 
     if (result || result === 0) {
-        // if (currentDisplay() !== result) {
-        //     console.log("Update result");
-        //     result = currentDisplay;
-        // }
         continueCalculation();
     }
 
