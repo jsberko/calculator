@@ -1,114 +1,175 @@
+// Bugs to Fix
+// 17.6*6 = 105.600000...how to trim zeros?
+// Negating a result breaks the program
+// Pressing the percentage button works only one time
+
+
 // Query Selectors
 const container = document.querySelector(".container");
 const display = document.querySelector(".display");
-
 
 
 // Variables
 let num1;
 let num2;
 let currentOperator;
+let result;
+let readyForNum1 = true;
+let readyForNum2 = false;
+let readyToCalculate = false;
 
 
-
-// Math Operation Functions
+// Math Functions
 function add(a, b) { return a + b };
 function subtract(a, b) { return a - b };
 function multiply(a, b) { return a * b };
 function divide(a, b) {
     if (b === 0) {
         return "Nice Try";
-    } else { return a / b; }
+    } else {
+        return a / b;
+    }
+}
+
+
+// Program Functions
+function addDigit(strNum) {
+    // Conditional to handle "0" at beginning of program
+    if (currentDisplay() === "0" && !num1) {
+        clearDisplay();
+    }
+
+    // Resetting for new equation
+    if (result || result === 0) {
+        clearDisplay();
+        resetCalculation();
+
+        console.log("Start new calculation")
+    }
+
+    // Adding number 2
+    if (readyForNum2 || readyToCalculate && displayIsZero()) {
+        clearDisplay();
+        readyForNum2 = false;
+        readyToCalculate = true;
+    }
+
+    // Default behavior, including check to prevent overflowing display
+    if (displayLength() < 11) {
+        display.textContent += strNum;
+    }
+}
+
+function updateOperator(operatorInput) {
+    // Assigning num1 for the first time 
+    if (!num1 && num1 !== 0) {
+        assignNum1()
+    }
+
+    // Performing a running calculation 
+    if (result || result === 0) {
+        // if (currentDisplay() !== result) {
+        //     console.log("Update result");
+        //     result = currentDisplay;
+        // }
+        continueCalculation();
+    }
+
+    // Allowing operator button to perform calculation when num1, operator, and num2 are present
+    if (readyToCalculate) {
+        compute();
+    }
+
+    // Default behavior
+    assignOperand(operatorInput);
+}
+
+
+function continueCalculation() {
+    num1 = result;
+    num2 = undefined;
+    result = undefined;
+    readyForNum2 = true;
+    readyToCalculate = false;
+    console.log("Continue calculation");
+}
+
+
+function resetCalculation() {
+    num1 = undefined;
+    num2 = undefined;
+    result = undefined;
+    readyForNum1 = true;
+    readyToCalculate = false;
+    console.log("Reset calculation");
+}
+
+
+function compute() {
+
+    if (readyToCalculate && result !== displayNum()) {
+        assignNum2();
+        result = operate(num1, num2, currentOperator);
+        console.log(`${num1}${currentOperator}${num2} = ${result}`)
+
+        updateDisplay(result);
+    }
 }
 
 
 function operate(num1, num2, operator) {
-    let result;
 
     if (operator === "+") { result = add(num1, num2) };
     if (operator === "-") { result = subtract(num1, num2) };
     if (operator === "*") { result = multiply(num1, num2) };
     if (operator === "/") { result = divide(num1, num2) };
 
+    console.log(result);
+
+    if (resultNeedsRounding(result)) {
+        result = roundResult(result);
+    }
+
     return result;
-    // if (result.toString().length < 11) {
-    //     return result;
-    // } else {
-    //     let resultLength = result.toString().length;
-    //     roundResult(result, resultLength);
-    // }
 }
 
-//Assess behavior when compute key pressed 2+ times in a row
-function compute() {
-    if (num1 && currentOperator && !niceTry()) {
-        assignNum2();
-        let result = operate(num1, num2, currentOperator);
-        updateDisplay(result);
-        num1 = result;
-        num2 = undefined;
+
+// Currently Working On
+function roundResult(workingResult) {
+    console.log("roundResult() called");
+    let stringResult = workingResult.toString();
+
+    if (stringResult.includes(".")) {
+        let decimalIndex = stringResult.indexOf(".");
+
+        return workingResult.toFixed(10 - decimalIndex);
+    } else {
+        return "Too Big";
     }
 }
 
 
 
-// Program Functions
-function clearProgram(str) {
+function clearProgram() {
     num1 = undefined;
     num2 = undefined;
     currentOperator = undefined;
+    result = undefined;
+    readyForNum1 = false;
+    readyForNum2 = false;
+    readyToCalculate = false;
     clearDisplay();
-    updateDisplay(str);
+    updateDisplay("0");
 }
 
-function addDigit(strNum) {
-    if (displayLength() < 11 && !niceTry()) {
-        if (displayIsZero()) {
-            clearDisplay();
-        }
-        // Conditional to allow for adding num2
-        if (num1 === captureDisplay()) {
-            clearDisplay();
-        }
-
-        display.textContent += strNum;
-    }
-}
-
-function eraseLastNum() {
-    if (captureDisplay() !== 0) {
-        if (display.textContent.length === 1) {
-            updateDisplay("0");
-        } else {
-            updateDisplay(display.textContent.slice(0, -1));
-        }
-    }
-}
-
-function displayLength() {
-    return display.textContent.length;
-}
-
-function updateOperator(operatorInput) {
-    if (!niceTry()) {
-        if (!displayIsZero() && !num1) {
-            assignNum1()
-        }
-        //
-        if (captureDisplay() !== num1) {
-            // This makes it so that I can't divide 5 by 5...or similar
-            compute()
-        }
-        assignOperand(operatorInput);
-    }
-}
 
 function assignNum1() {
-    num1 = captureDisplay();
+    num1 = displayNum();
+    readyForNum2 = true;
 }
 
 function assignNum2() {
-    num2 = captureDisplay();
+    num2 = displayNum();
 }
 
 function assignOperand(operatorInput) {
@@ -117,16 +178,17 @@ function assignOperand(operatorInput) {
 
 
 // Feature Functions
-function roundResult(result, resultLength) {
-    console.log("roundResult function launched")
-    console.log(result);
-    console.log(resultLength);
+function eraseLastNum() {
+    if (displayNum() !== result && !readyForNum2) {
+        if (currentDisplay().length === 1) {
+            console.log("Erasing");
+            updateDisplay("0");
+        } else {
+            updateDisplay(currentDisplay().slice(0, -1));
+        }
+    }
 }
 
-
-function evaluateDisplayLength() {
-    return display.textContent.length;
-}
 
 function addDecimal(str) {
     if (!containsDecimal()) {
@@ -134,71 +196,138 @@ function addDecimal(str) {
     }
 }
 
-function findDecimalIndex() {
-    return display.textContent.indexOf(".");
+
+function percentageOfCurrentDisplay() {
+    if (displayNum() !== result && currentDisplay() !== "0" && !currentDisplay().includes(".")) {
+        // let percentagedResult = display.textContent;
+
+        if (currentDisplay().length === 1) {
+            updateDisplay(`0.0${currentDisplay()}`);
+        } else if (currentDisplay().length === 2) {
+            updateDisplay(`0.${currentDisplay()}`);
+        } else {
+            // let currentDisplay = currentDisplay();
+            let index = currentDisplay().length - 2;
+            let part1 = currentDisplay().slice(0, index);
+            let part2 = currentDisplay().slice(index);
+
+            updateDisplay(parseFloat(`${part1}.${part2}`))
+        }
+    }
 }
 
-function containsDecimal(result) {
-    return result.includes(".");
+
+function negateDisplay() {
+    if (displayNum() !== result) {
+        if (!currentDisplay().includes("-") && currentDisplay() !== "0") {
+            let negate = "-";
+
+            updateDisplay(negate + currentDisplay());
+        } else if (currentDisplay().includes("-")) {
+
+            updateDisplay(currentDisplay().slice(1));
+        }
+    }
+
+    // if (!currentDisplay().includes("-") && currentDisplay() !== "0") {
+    //     let negate = "-";
+
+    //     updateDisplay(negate + currentDisplay());
+    // } else if (currentDisplay().includes("-")) {
+
+    //     updateDisplay(currentDisplay().slice(1));
+    // }
 }
 
 
-// Screen Functions
+// Display Functions
+function updateDisplay(message) {
+    display.textContent = message;
+}
+
 function displayIsZero() {
-    return display.textContent === "0";
+    return currentDisplay() === "0";
+}
+
+function displayLength() {
+    return currentDisplay().length;
 }
 
 function clearDisplay() {
     display.textContent = "";
 }
 
-function captureDisplay() {
-    return +(display.textContent);
+function currentDisplay() {
+    return display.textContent;
+}
+
+function displayNum() {
+    return +currentDisplay();
 }
 
 function niceTry() {
-    return display.textContent === "Nice Try";
+    return currentDisplay() === "Nice Try";
 }
 
-function updateDisplay(message) {
-    display.textContent = message;
+function tooBig() {
+    return currentDisplay() === "Too Big";
 }
 
+function noErrorMessages() {
+    return !niceTry() && !tooBig();
+}
+
+
+// Helper Functions
+function findDecimalIndex() {
+    return currentDisplay().indexOf(".");
+}
+
+function containsDecimal() {
+    return currentDisplay().includes(".");
+}
+
+function resultNeedsRounding(result) {
+    return result.toString().length >= 11;
+}
 
 
 // Event Listeners
-
-//A way to lock all keys except "AC" if display.textContent === "Nice Try"?
 document.addEventListener("DOMContentLoaded", () => display.textContent = "0");
 
 container.addEventListener("click", (event) => {
     let target = event.target;
 
-    switch (target.id) {
-        case "AC": clearProgram("0"); break;
-        case "negate": negateDisplay(); break;
-        case "percent": percentageOfCurrentDisplay(); break;
+    if (target.id === "AC") {
+        clearProgram();
+    }
 
-        case "zero": addDigit("0"); break;
-        case "one": addDigit("1"); break;
-        case "two": addDigit("2"); break;
-        case "three": addDigit("3"); break;
-        case "four": addDigit("4"); break;
-        case "five": addDigit("5"); break;
-        case "six": addDigit("6"); break;
-        case "seven": addDigit("7"); break;
-        case "eight": addDigit("8"); break;
-        case "nine": addDigit("9"); break;
+    // Check to force user to clear program after receiving error message
+    if (noErrorMessages()) {
+        switch (target.id) {
+            case "negate": negateDisplay(); break;
+            case "percent": percentageOfCurrentDisplay(); break;
 
-        case "add": updateOperator("+"); break;
-        case "subtract": updateOperator("-"); break;
-        case "multiply": updateOperator("*"); break;
-        case "divide": updateOperator("/"); break;
+            case "zero": addDigit("0"); break;
+            case "one": addDigit("1"); break;
+            case "two": addDigit("2"); break;
+            case "three": addDigit("3"); break;
+            case "four": addDigit("4"); break;
+            case "five": addDigit("5"); break;
+            case "six": addDigit("6"); break;
+            case "seven": addDigit("7"); break;
+            case "eight": addDigit("8"); break;
+            case "nine": addDigit("9"); break;
 
-        //Every time I hit this button it adds a decimal
-        case "decimal": addDecimal("."); break;
-        case "backspace": eraseLastNum(); break;
-        case "compute": compute(); break;
+            case "add": updateOperator("+"); break;
+            case "subtract": updateOperator("-"); break;
+            case "multiply": updateOperator("*"); break;
+            case "divide": updateOperator("/"); break;
+
+            case "decimal": addDecimal("."); break;
+            case "backspace": eraseLastNum(); break;
+            case "compute": compute(); break;
+        }
     }
 })
 
@@ -226,227 +355,7 @@ document.addEventListener('keydown', (event) => {
         case "*": updateOperator("*"); break;
         case "/": updateOperator("/"); break;
 
-        //Every time I hit this button it adds a decimal
         case ".": addDecimal("."); break;
         case "Enter": compute(); break;
     }
 });
-
-
-// Refactor 2"
-// const container = document.querySelector(".container");
-// const display = document.querySelector(".display");
-// const decimalButton = document.querySelector("#decimal");
-// const backspaceButton = document.querySelector("#backspace");
-
-// const addButton = document.querySelector("#add");
-// const subtractButton = document.querySelector("#subtract");
-// const multiplyButton = document.querySelector("#multiply");
-// const divideButton = document.querySelector("#divide");
-
-
-// Variables
-// let num1 = false;
-// let num2 = false;
-// let currentOperator = false;
-// let timeToAddNum2 = false;
-// let timeToCompute = false;
-// let answer = false;
-// let equationInProgress = false;
-
-
-
-// Program Operation Functions
-
-// function addDigit(numStr) {
-
-//     if (displayIsZero() && !num1) {
-//         removeZero();
-//     } else if (captureDisplay() === "Nice Try") {
-//         clearDisplay();
-//     } else if (timeToAddNum2 || equationInProgress) {
-//         console.log("On to num2");
-
-//         if (timeToAddNum2) {
-//             console.log("Adding number 2");
-//             timeToAddNum2 = false;
-//             clearDisplay();
-//         }
-//     }
-
-//     addToDisplay(numStr);
-// }
-
-
-// function updateOperator(operator) {
-
-//     if (!num1 && captureDisplay() !== "0") {
-//         captureNum1();
-//         timeToAddNum2 = true;
-//         timeToCompute = true;
-//         console.log("timeToAddNum2: True");
-//     } else if (num1) {
-//         captureNum2();
-//         compute();
-//     }
-
-//     currentOperator = operator;
-// }
-
-
-// function compute() {
-//     console.log("compute() called");
-//     // Capture num2 and run operation
-//     if (!num2 && captureDisplay() !== "Nice Try") {
-//         console.log("Capture num2 and run operation");
-//         captureNum2();
-//         // clearDisplay();
-//         num1 = +num1;
-//         num2 = +num2;
-
-//         operate(num1, num2, currentOperator);
-//     }
-// User using operator buttons to compute (num2 already captured)
-//     else if (num1 !== captureDisplay() && num2) {
-//         console.log("Already have num2");
-//         // clearDisplay();
-//         num1 = +num1;
-//         num2 = +num2;
-
-//         operate(num1, num2, currentOperator);
-//     }
-// }
-
-
-// function operate(num1, num2, currentOperator) {
-//     console.log("operate() called");
-//     let result;
-
-//     if (currentOperator === "/" && num2 === 0) {
-//         clearProgram("Nice Try");
-//         return;
-//     }
-
-//     if (currentOperator === "+") { result = add(num1, num2); }
-//     if (currentOperator === "-") { result = subtract(num1, num2) }
-//     if (currentOperator === "*") { result = multiply(num1, num2) }
-//     if (currentOperator === "/") { result = divide(num1, num2) }
-
-//     let answer = result.toString();
-
-//     clearDisplay();
-//     addToDisplay(answer);
-//     useAnswerForNextEquation();
-// }
-
-// function evaluateVariables() { }
-
-// function evaluateResult(result) { }
-
-// function addDecimal() {
-//     let decimalPresent = false;
-//     //Check for decimal
-//     if (display.textContent.includes(".")) {
-//         decimalPresent = true;
-//     }
-// If there is no decimal and the display is zero, add a decimal
-// else if (!decimalPresent && displayIsZero()) {
-//     updateDisplay(".")
-// }
-// Else, add a decimal
-//     else {
-//         updateDisplay(".")
-//     }
-// }
-
-// function roundDecimalCheck(result) {
-//     let resultStr = result.toString();
-
-//     if (resultStr.length > 11 && resultStr.includes(".")) {
-//         let decimalIndex = resultStr.indexOf(".");
-//         let placeValue = 11 - decimalIndex;
-
-//         let roundedResult = roundToPlace(result, placeValue).toString();
-//         return roundedResult;
-//     }
-//     else { return result }
-
-
-
-//     function roundToPlace(number, place) {
-//         const multiplier = Math.pow(10, place);
-//         return Math.round(number * multiplier) / multiplier;
-//     }
-// }
-
-// Program Helper Functions
-// function readyToAddNum2() {
-//     return num1 && currentOperator && !timeToAddNum2;
-// }
-
-// function captureNum1() {
-//     console.log("captureNum1() called");
-//     num1 = captureDisplay();
-// console.log(`Num1 = ${num1}`);
-// }
-
-// function captureNum2() {
-//     console.log("captureNum2() called");
-//     num2 = captureDisplay();
-// console.log(`Num2 = ${num2}`);
-// }
-
-// function useAnswerForNextEquation() {
-//     console.log("useAnswerForNextEquation() called");
-//     num1 = captureDisplay();
-//     num2 = false;
-//     currentOperator = false;
-//     timeToAddNum2 = false;
-//     timeToCompute = false;
-//     equationInProgress = true;
-// }
-
-
-// function clearProgram(str) {
-//     console.log("clearProgram() called");
-//     display.textContent = str;
-//     num1 = false;
-//     num2 = false;
-//     currentOperator = false;
-//     timeToAddNum2 = false;
-//     timeToCompute = false;
-//     answer = false;
-//     equationInProgress = false;
-// }
-
-
-// Display Functions
-
-// function addToDisplay(numStr) {
-//Check to make sure number fits the display
-//     if (fitsDisplay()) {
-//         display.textContent += numStr;
-//     } else {
-//         console.log("Does not fit display");
-//     }
-// }
-
-// function captureDisplay() {
-//     return display.textContent;
-// }
-
-// function displayIsZero() {
-//     return display.textContent === "0";
-// }
-
-// function clearDisplay() {
-//     display.textContent = "";
-// }
-
-// function fitsDisplay(numStr) {
-//     return display.textContent.length < 11;
-// }
-
-// function removeZero() {
-//     display.textContent = "";
-// }
