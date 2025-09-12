@@ -60,6 +60,7 @@ function addDigit(strNum) {
     }
 }
 
+
 function updateOperator(operatorInput) {
     // Assigning num1 for the first time 
     if (!num1 && num1 !== 0) {
@@ -130,20 +131,17 @@ function operate(num1, num2, operator) {
 }
 
 
-// Currently Working On
-function roundResult(workingResult) {
+function roundResult(workingNum) {
     console.log("roundResult() called");
-    let stringResult = workingResult.toString();
+    let workingStr = workingNum.toString();
 
-    if (stringResult.includes(".")) {
-        let decimalIndex = stringResult.indexOf(".");
-
-        return workingResult.toFixed(10 - decimalIndex);
+    if (workingStr.includes(".")) {
+        let decimalIndex = workingStr.indexOf(".");
+        return parseFloat(workingNum.toFixed(10 - decimalIndex).toString());
     } else {
         return "Too Big";
     }
 }
-
 
 
 function clearProgram() {
@@ -164,9 +162,11 @@ function assignNum1() {
     readyForNum2 = true;
 }
 
+
 function assignNum2() {
     num2 = displayNum();
 }
+
 
 function assignOperand(operatorInput) {
     currentOperator = operatorInput;
@@ -224,15 +224,6 @@ function negateDisplay() {
             updateDisplay(currentDisplay().slice(1));
         }
     }
-
-    // if (!currentDisplay().includes("-") && currentDisplay() !== "0") {
-    //     let negate = "-";
-
-    //     updateDisplay(negate + currentDisplay());
-    // } else if (currentDisplay().includes("-")) {
-
-    //     updateDisplay(currentDisplay().slice(1));
-    // }
 }
 
 
@@ -241,33 +232,41 @@ function updateDisplay(message) {
     display.textContent = message;
 }
 
+
 function displayIsZero() {
     return currentDisplay() === "0";
 }
+
 
 function displayLength() {
     return currentDisplay().length;
 }
 
+
 function clearDisplay() {
     display.textContent = "";
 }
+
 
 function currentDisplay() {
     return display.textContent;
 }
 
+
 function displayNum() {
     return +currentDisplay();
 }
+
 
 function niceTry() {
     return currentDisplay() === "Nice Try";
 }
 
+
 function tooBig() {
     return currentDisplay() === "Too Big";
 }
+
 
 function noErrorMessages() {
     return !niceTry() && !tooBig();
