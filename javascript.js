@@ -1,9 +1,3 @@
-// Bugs to Fix
-// 17.6*6 = 105.600000...how to trim zeros?
-// Negating a result breaks the program
-// Pressing the percentage button works only one time
-
-
 // Query Selectors
 const container = document.querySelector(".container");
 const display = document.querySelector(".display");
@@ -17,6 +11,7 @@ let result;
 let readyForNum1 = true;
 let readyForNum2 = false;
 let readyToCalculate = false;
+let runningCalculation = false;
 
 
 // Math Functions
@@ -39,12 +34,16 @@ function addDigit(strNum) {
         clearDisplay();
     }
 
+    // Performing a running calculation 
+    if (runningCalculation) {
+        clearDisplay();
+        continueCalculation();
+    }
+
     // Resetting for new equation
     if (result || result === 0) {
         clearDisplay();
         resetCalculation();
-
-        console.log("Start new calculation")
     }
 
     // Adding number 2
@@ -75,6 +74,7 @@ function updateOperator(operatorInput) {
     // Allowing operator button to perform calculation when num1, operator, and num2 are present
     if (readyToCalculate) {
         compute();
+        runningCalculation = true;
     }
 
     // Default behavior
@@ -88,6 +88,7 @@ function continueCalculation() {
     result = undefined;
     readyForNum2 = true;
     readyToCalculate = false;
+    runningCalculation = false;
     console.log("Continue calculation");
 }
 
@@ -98,6 +99,7 @@ function resetCalculation() {
     result = undefined;
     readyForNum1 = true;
     readyToCalculate = false;
+    runningCalculation = false;
     console.log("Reset calculation");
 }
 
@@ -110,6 +112,7 @@ function compute() {
         console.log(`${num1}${currentOperator}${num2} = ${result}`)
 
         updateDisplay(result);
+        readyToCalculate = false;
     }
 }
 
@@ -121,7 +124,7 @@ function operate(num1, num2, operator) {
     if (operator === "*") { result = multiply(num1, num2) };
     if (operator === "/") { result = divide(num1, num2) };
 
-    console.log(result);
+    // console.log(result);
 
     if (resultNeedsRounding(result)) {
         result = roundResult(result);
@@ -152,6 +155,7 @@ function clearProgram() {
     readyForNum1 = false;
     readyForNum2 = false;
     readyToCalculate = false;
+    resultIsPercent = false;
     clearDisplay();
     updateDisplay("0");
 }
@@ -189,40 +193,6 @@ function eraseLastNum() {
 function addDecimal(str) {
     if (!containsDecimal()) {
         display.textContent += str;
-    }
-}
-
-
-function percentageOfCurrentDisplay() {
-    if (displayNum() !== result && currentDisplay() !== "0" && !currentDisplay().includes(".")) {
-        // let percentagedResult = display.textContent;
-
-        if (currentDisplay().length === 1) {
-            updateDisplay(`0.0${currentDisplay()}`);
-        } else if (currentDisplay().length === 2) {
-            updateDisplay(`0.${currentDisplay()}`);
-        } else {
-            // let currentDisplay = currentDisplay();
-            let index = currentDisplay().length - 2;
-            let part1 = currentDisplay().slice(0, index);
-            let part2 = currentDisplay().slice(index);
-
-            updateDisplay(parseFloat(`${part1}.${part2}`))
-        }
-    }
-}
-
-
-function negateDisplay() {
-    if (displayNum() !== result) {
-        if (!currentDisplay().includes("-") && currentDisplay() !== "0") {
-            let negate = "-";
-
-            updateDisplay(negate + currentDisplay());
-        } else if (currentDisplay().includes("-")) {
-
-            updateDisplay(currentDisplay().slice(1));
-        }
     }
 }
 
@@ -295,14 +265,12 @@ container.addEventListener("click", (event) => {
 
     if (target.id === "AC") {
         clearProgram();
+        console.clear();
     }
 
     // Check to force user to clear program after receiving error message
     if (noErrorMessages()) {
         switch (target.id) {
-            case "negate": negateDisplay(); break;
-            case "percent": percentageOfCurrentDisplay(); break;
-
             case "zero": addDigit("0"); break;
             case "one": addDigit("1"); break;
             case "two": addDigit("2"); break;
@@ -331,8 +299,6 @@ document.addEventListener('keydown', (event) => {
 
     switch (event.key) {
         case "Escape": clear(); break;
-        case "_": negateDisplay(); break;
-        case "%": percentageOfCurrentDisplay(); break;
 
         case "0": addDigit("0"); break;
         case "1": addDigit("1"); break;
